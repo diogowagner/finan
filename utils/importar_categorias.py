@@ -16,6 +16,9 @@ def importar_categorias(filename):
                 ativo = ativo.lower() == 'sim'
                 identacao_atual = len(descricao) - len(descricao.lstrip())
 
+                # Ajustar o tamanho da classificação
+                classificacao = classificacao[:3]
+
                 if identacao_atual > identacao_anterior:
                     # Esta é uma subcategoria da categoria anterior
                     categoria_pai = categoria
