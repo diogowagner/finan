@@ -135,3 +135,8 @@ MEDIA_URL = 'media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 print(BASE_DIR)
+
+try:
+    from local_settings import *
+except ImportError:
+    ...
