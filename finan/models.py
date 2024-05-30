@@ -51,7 +51,7 @@ class Empresa(models.Model):
     logotipo = models.ImageField(upload_to='logotipos/', blank=True, null=True)
     nome_fantasia = models.CharField('nome fantasia', max_length=100)
     razao_social = models.CharField('razao social', max_length=100)
-    cnpj_cpf = models.CharField('CPF/CNPJ', max_length=18)
+    cnpj_cpf = models.CharField('CPF/CNPJ', max_length=14)
     insc_estadual = models.CharField('I.E.', max_length=18, blank=True, null=True)
     insc_municipal = models.CharField('I.M.', max_length=18, blank=True, null=True)
     endereco = models.CharField(max_length=200)
