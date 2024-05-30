@@ -27,7 +27,7 @@ class Categoria(models.Model):
         verbose_name='Categoria pai',
     )
     classificacao = models.CharField(
-        max_length=2,
+        max_length=3,
         choices=CLASSIFICACAO_ESCOLHAS,
         default=MISTA,
     )
