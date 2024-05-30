@@ -12,7 +12,7 @@ class Categoria(models.Model):
         RECEITA: 'Receita',
     }
     descricao = models.CharField(verbose_name='descricao', max_length=200, default='')
-    cor = ColorField(auto_created=True)
+    cor = ColorField(auto_created=True, max_length=7)
     ativo = models.BooleanField(default=True)
     is_categoria_filha = models.BooleanField(verbose_name='Categoria filha', default=False)
     slug = models.SlugField(
