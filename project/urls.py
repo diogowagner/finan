@@ -19,9 +19,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 
+from fluxo import views
+
 urlpatterns = [
-    path('finan/', include('finan.urls')),
-    path('', admin.site.urls),
+    path('select2/', include('django_select2.urls')),
+    path('', include('fluxo.urls')),
+    path('admin/', admin.site.urls),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

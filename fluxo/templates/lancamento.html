@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+{% block conteudo %}
+
+{% include "botoes_lancamento.html" %}
+
+<br>
+<div class="table-responsive">
+    <table class="table table-hover table-striped table-sm">
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Categoria</th>
+            <th>Descrição</th>
+            <th class="text-right">Valor</th>
+            <th class="text-right">Saldo</th>
+            <th>Situação</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for lancamento in lancamentos %}
+            {% for item in lancamento.itens.all %}
+        <tr>
+            <td>{{ lancamento.data_lancamento|date:"d M" }}</td>
+            <td>{{ item.categoria }}</td>
+            <td><a class="text-info" href="../../{{ lancamento.tipo|lower }}/edit/{{ lancamento.id }}" >{{ item.descricao }}</a></td>
+            <td class="text-right">{{ item.valor|currency }}</td>
+            <td class="text-right">{{ item.id }}</td> <!-- Ajuste o saldo conforme necessário -->
+            <td>{{ lancamento.situacao }}</td>
+        </tr>
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<nav aria-label="Page navigation" class="navigation">
+    <ul class="pagination pagination-sm">
+        {% if lancamentos.has_previous %}
+        <li class="page-item"><a href="?page=1&{{ parameters }}" class="page-link">&laquo; Primeiro</a></li>
+        <li class="page-item"><a href="?page={{ lancamentos.previous_page_number }}&{{ parameters }}" class="page-link">Anterior</a></li>
+        {% endif %}
+        <li class="page-item"><a href="#" class="page-link">Página {{ lancamentos.number }} de {{ lancamentos.paginator.num_pages }}</a></li>
+        {% if lancamentos.has_next %}
+        <li class="page-item"><a href="?page={{ lancamentos.next_page_number }}&{{ parameters }}" class="page-link">Próximo</a></li>
+        <li class="page-item"><a href="?page={{ lancamentos.paginator.num_pages }}&{{ parameters }}" class="page-link">Último &raquo;</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+{% endblock conteudo %}

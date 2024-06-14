@@ -86,9 +86,8 @@ class Conta(models.Model):
         ('Aleatória', 'Aleatória'),
     )
 
-    tipo_conta = models.CharField(max_length=100, choices=TIPO_CONTA_CHOICES)
+    tipo_conta = models.CharField(max_length=20, choices=TIPO_CONTA_CHOICES)
     banco = models.CharField(max_length=100)
-    tipo = models.CharField(max_length=20, choices=TIPO_CONTA_CHOICES)  # Corrigido para usar choices
     agencia = models.CharField(max_length=10)
     conta = models.CharField(max_length=15)
     gerente = models.CharField(max_length=100)
@@ -102,3 +101,34 @@ class Conta(models.Model):
     agrupamento = models.CharField(max_length=100)
     permite_lancamentos = models.BooleanField()
     data_criacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.apelido_conta
+
+
+class CentroCusto(models.Model):
+    TIPO_CENTRO_CHOICES = (
+        ('Centro de custo/lucro pai', 'Centro de custo/lucro pai'),
+        ('Centro de custo/lucro filho', 'Centro de custo/lucro filho'),
+    )
+    descricao = models.CharField(verbose_name='descricao', max_length=200, default='')
+    tipo_centro_custo = models.CharField(max_length=100, choices=TIPO_CENTRO_CHOICES)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.descricao
+
+class FormaPagamento(models.Model):
+    descricao = models.CharField(verbose_name='descricao', max_length=200, default='')
+    ativa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.descricao
+
+class Tag(models.Model):
+    tag = models.CharField(verbose_name='tags', max_length=100)
+
+    def __str__(self):
+        return self.tag
+
+
