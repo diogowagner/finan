@@ -29,24 +29,39 @@ def filtros(request):
     )
 
 def lancamentos(request):
-
     titulo = 'Lista lançamentos'
-    item = Item.objects.order_by("-pk",)
+    item = Item.objects.order_by("-pk")
     lancamentos_list = Lancamento.objects.order_by("-data_lancamento", "-pk").prefetch_related('itens')
     saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
-    saldo_geral = f'{saldo_geral:.2f}'
+    saldo_geral = f'{saldo_geral:.2f}' if saldo_geral else '0.00'
 
-    paginator = Paginator(lancamentos_list, 50)
-    page = request.GET.get('page')
-    lancamentos_paginados = paginator.get_page(page)
+    paginator = Paginator(lancamentos_list, 10)
+    page_number = request.GET.get('page')
+    lancamentos_paginados = paginator.get_page(page_number)
+
+    # Calcular saldo sequencialmente na ordem correta
+    saldo = 0
+    lancamentos_com_saldos = []
+    for lancamento in reversed(lancamentos_list):  # Inverte a ordem dos lançamentos
+        saldo_lancamento = 0
+        for item in lancamento.itens.all():
+            saldo_lancamento += item.valor
+        saldo += saldo_lancamento
+        lancamentos_com_saldos.insert(0, {  # Insere no início para manter a ordem inversa
+            'lancamento': lancamento,
+            'saldo': saldo
+        })
+
+    # Ajustar a lista de lançamentos e saldos conforme a paginação
+    lancamentos_com_saldos_paginados = lancamentos_com_saldos[:len(lancamentos_paginados)]
 
     get_copy = request.GET.copy()
-    parameters = get_copy.pop('page',True) and get_copy.urlencode()
+    parameters = get_copy.pop('page', True) and get_copy.urlencode()
 
     context = {
         'titulo': titulo,
         'is_lancamento': True,
-        'lancamentos': lancamentos_paginados,
+        'lancamentos_com_saldos': lancamentos_com_saldos_paginados,
         'item': item,
         'parameters': parameters,
         'saldo_geral': saldo_geral,
@@ -57,6 +72,7 @@ def lancamentos(request):
         'lancamento.html',
         context
     )
+
 
 
 from django.forms.models import inlineformset_factory
