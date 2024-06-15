@@ -4,9 +4,9 @@
 
 <!-- Começa o conteúdo da página -->
 {% include "botoes_lancamento.html" %}
-<hr class="mb-3">
+<hr class="mb-2">
 <h4 class="mb-3 {{ cor }}">{{ tipo }}</h4>
-<hr class="mb-3">
+<hr class="mb-2">
 <form id="lForm" class="needs-validation" method="post">
     {% csrf_token %}
     <div class="row">
@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <hr class="mb-2">
+    <hr class="mb-1">
 
     <div class="row">
         <div class="col-md-9 mb-3">

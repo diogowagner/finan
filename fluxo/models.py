@@ -29,6 +29,7 @@ class Lancamento(models.Model):
     tipo_documento = models.CharField(max_length=100, blank=True, null=True, verbose_name="Tipo de Documento")
     numero_documento = models.CharField(max_length=100, blank=True, null=True, verbose_name="Número do Documento")
     tipo = models.CharField(max_length=20, choices=DESPESA_RECEITA_CHOICES, verbose_name="Tipo")
+    valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     situacao = models.CharField(max_length=20, choices=PAGO_APAGAR_CHOICES, default='PAGO', verbose_name="Situação")
 
     def __str__(self):

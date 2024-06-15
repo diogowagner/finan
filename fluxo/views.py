@@ -17,15 +17,23 @@ def index(request):
         context
     )
 
+def filtros(request):
+
+    context = {}
+
+    return render(
+        request,
+        'filtros.html',
+        context
+    )
+
 def lancamentos(request):
 
     titulo = 'Lista lançamentos'
     item = Item.objects.order_by("-pk",)
-    lancamentos = Lancamento.objects.order_by("-data_lancamento","-pk")
     lancamentos_list = Lancamento.objects.order_by("-data_lancamento", "-pk").prefetch_related('itens')
-    
 
-    paginator = Paginator(lancamentos_list, 20)  # Paginação para 20 objetos por página
+    paginator = Paginator(lancamentos_list, 50)
     page = request.GET.get('page')
     lancamentos_paginados = paginator.get_page(page)
 
@@ -34,6 +42,7 @@ def lancamentos(request):
 
     context = {
         'titulo': titulo,
+        'is_lancamento': True,
         'lancamentos': lancamentos_paginados,
         'item': item,
         'parameters': parameters,
