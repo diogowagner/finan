@@ -30,49 +30,52 @@ def filtros(request):
 
 def lancamentos(request):
     titulo = 'Lista lançamentos'
-    item = Item.objects.order_by("-pk")
+    
+    # Consulta para pegar todos os itens
+    itens = Item.objects.order_by("-pk")
+    
+    # Consulta para pegar todos os lançamentos ordenados pela data e ID
     lancamentos_list = Lancamento.objects.order_by("-data_lancamento", "-pk").prefetch_related('itens')
+    
+    # Consulta para calcular o saldo geral somando todos os valores dos itens
     saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
-    saldo_geral = f'{saldo_geral:.2f}' if saldo_geral else '0.00'
+    saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
 
-    paginator = Paginator(lancamentos_list, 10)
-    page_number = request.GET.get('page')
-    lancamentos_paginados = paginator.get_page(page_number)
-
-    # Calcular saldo sequencialmente na ordem correta
-    saldo = 0
+    # Lista para armazenar os lançamentos com seus respectivos saldos
     lancamentos_com_saldos = []
+    saldo_acumulado = 0
+
+    # Calcular os saldos sequencialmente na ordem correta
     for lancamento in reversed(lancamentos_list):  # Inverte a ordem dos lançamentos
-        saldo_lancamento = 0
-        for item in lancamento.itens.all():
-            saldo_lancamento += item.valor
-        saldo += saldo_lancamento
-        lancamentos_com_saldos.insert(0, {  # Insere no início para manter a ordem inversa
+        saldo_lancamento = sum(item.valor for item in lancamento.itens.all())
+        saldo_acumulado += saldo_lancamento
+        lancamentos_com_saldos.append({
             'lancamento': lancamento,
-            'saldo': saldo
+            'saldo': saldo_acumulado,
         })
 
-    # Ajustar a lista de lançamentos e saldos conforme a paginação
-    lancamentos_com_saldos_paginados = lancamentos_com_saldos[:len(lancamentos_paginados)]
-
+    paginator = Paginator(lancamentos_com_saldos, 10)
+    page_number = request.GET.get('page')
+    lancamentos_paginados = paginator.get_page(page_number)
+    
+    # Construir os parâmetros de query string para a paginação
     get_copy = request.GET.copy()
     parameters = get_copy.pop('page', True) and get_copy.urlencode()
+    print(lancamentos_com_saldos)
+    print(lancamentos_paginados)
 
+    # Contexto para enviar ao template
     context = {
         'titulo': titulo,
         'is_lancamento': True,
-        'lancamentos_com_saldos': lancamentos_com_saldos_paginados,
-        'item': item,
+        'lancamentos_com_saldos': lancamentos_paginados,
+        'itens': itens,  # Renomeei 'item' para 'itens' para ser mais descritivo
         'parameters': parameters,
         'saldo_geral': saldo_geral,
     }
 
-    return render(
-        request,
-        'lancamento.html',
-        context
-    )
-
+    # Renderizar o template com o contexto
+    return render(request, 'lancamento.html', context)
 
 
 from django.forms.models import inlineformset_factory
