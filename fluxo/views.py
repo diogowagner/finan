@@ -5,6 +5,7 @@ from .forms import LancamentosForm, AnexoForm, ItemForm
 from django.http import QueryDict
 from django.forms import modelformset_factory
 from django.db.models import Sum
+import datetime
 
 from . import forms, models
 
@@ -31,11 +32,39 @@ def filtros(request):
 def lancamentos(request):
     titulo = 'Lista lançamentos'
     
-    # Consulta para pegar todos os itens
-    itens = Item.objects.order_by("-pk")
+    # Capturar os parâmetros de data da URL
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
     
-    # Consulta para pegar todos os lançamentos ordenados pela data e ID
-    lancamentos_list = Lancamento.objects.order_by("-data_lancamento", "-pk").prefetch_related('itens')
+    # Definir a data atual
+    hoje = datetime.date.today()
+    
+    # Converter as strings de data para objetos datetime, se disponíveis
+    if data_inicio:
+        data_inicio = datetime.datetime.strptime(data_inicio, '%Y-%m-%d').date()
+    else:
+        data_inicio = hoje
+
+    if data_fim:
+        data_fim = datetime.datetime.strptime(data_fim, '%Y-%m-%d').date()
+    else:
+        data_fim = hoje
+
+    # Filtrar os lançamentos pelo intervalo de datas, se disponível
+    if data_inicio and data_fim:
+        lancamentos_list = Lancamento.objects.filter(
+            data_lancamento__range=(data_inicio, data_fim)
+        ).order_by("-data_lancamento", "-pk").prefetch_related('itens')
+    elif data_inicio:
+        lancamentos_list = Lancamento.objects.filter(
+            data_lancamento__gte=data_inicio
+        ).order_by("-data_lancamento", "-pk").prefetch_related('itens')
+    elif data_fim:
+        lancamentos_list = Lancamento.objects.filter(
+            data_lancamento__lte=data_fim
+        ).order_by("-data_lancamento", "-pk").prefetch_related('itens')
+    else:
+        lancamentos_list = Lancamento.objects.order_by("-data_lancamento", "-pk").prefetch_related('itens')
     
     # Consulta para calcular o saldo geral somando todos os valores dos itens
     saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
@@ -61,17 +90,20 @@ def lancamentos(request):
     # Construir os parâmetros de query string para a paginação
     get_copy = request.GET.copy()
     parameters = get_copy.pop('page', True) and get_copy.urlencode()
-    print(lancamentos_com_saldos)
-    print(lancamentos_paginados)
+
+    # Formatar as datas para o formato YYYY-MM-DD
+    data_inicio_str = data_inicio.strftime('%Y-%m-%d')
+    data_fim_str = data_fim.strftime('%Y-%m-%d')
 
     # Contexto para enviar ao template
     context = {
         'titulo': titulo,
         'is_lancamento': True,
         'lancamentos_com_saldos': lancamentos_paginados,
-        'itens': itens,  # Renomeei 'item' para 'itens' para ser mais descritivo
         'parameters': parameters,
         'saldo_geral': saldo_geral,
+        'data_inicio': data_inicio_str,
+        'data_fim': data_fim_str,
     }
 
     # Renderizar o template com o contexto
