@@ -3,7 +3,16 @@
 {% block conteudo %}
 
 <!-- Começa o conteúdo da página -->
-{% include "botoes_lancamento.html" %}
+
+<main role="main" class="flex-shrink-0">
+    <div class="container">
+        <div class="py-5 text-left">
+            <h5 class="mt-4">{{titulo}}</h5>
+        </div>
+<div class="row">
+
+    {% include "botoes_lancamento.html" %}
+
 <hr class="mb-2">
 <h4 class="mb-3 {{ cor }}">{{ tipo }}</h4>
 <hr class="mb-2">
