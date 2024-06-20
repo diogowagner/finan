@@ -5,7 +5,7 @@ from .forms import LancamentosForm, AnexoForm, ItemForm
 from django.http import QueryDict
 from django.forms import modelformset_factory
 from django.db.models import Sum
-import datetime
+from datetime import datetime, date, timedelta
 
 from . import forms, models
 
@@ -37,19 +37,19 @@ def lancamentos(request):
     data_fim = request.GET.get('data_fim')
     
     # Definir a data atual
-    hoje = datetime.date.today()
+    hoje = date.today()
     
     # Converter as strings de data para objetos datetime, se disponíveis
     if data_inicio:
-        data_inicio = datetime.datetime.strptime(data_inicio, '%Y-%m-%d').date()
+        data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d').date()
     else:
-        data_inicio = hoje
+        data_inicio = hoje - timedelta(days=7)
 
     if data_fim:
-        data_fim = datetime.datetime.strptime(data_fim, '%Y-%m-%d').date()
+        data_fim = datetime.strptime(data_fim, '%Y-%m-%d').date()
     else:
-        data_fim = hoje
-
+        data_fim = hoje 
+        
     # Filtrar os lançamentos pelo intervalo de datas, se disponível
     if data_inicio and data_fim:
         lancamentos_list = Lancamento.objects.filter(
@@ -70,9 +70,15 @@ def lancamentos(request):
     saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
     saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
 
+    # Calcular saldo anterior à data de início, se fornecida
+    saldo_anterior = 0
+    if data_inicio:
+        saldo_anterior = Lancamento.objects.filter(data_lancamento__lt=data_inicio).aggregate(Sum('itens__valor'))['itens__valor__sum']
+        saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
+
     # Lista para armazenar os lançamentos com seus respectivos saldos
     lancamentos_com_saldos = []
-    saldo_acumulado = 0
+    saldo_acumulado = saldo_anterior
 
     # Calcular os saldos sequencialmente na ordem correta
     for lancamento in reversed(lancamentos_list):  # Inverte a ordem dos lançamentos
@@ -86,6 +92,11 @@ def lancamentos(request):
     paginator = Paginator(lancamentos_com_saldos, 10)
     page_number = request.GET.get('page')
     lancamentos_paginados = paginator.get_page(page_number)
+
+    if lancamentos_paginados:
+        primeiro_item = lancamentos_paginados[0]['lancamento'].data_lancamento
+    else:
+        primeiro_item = None
     
     # Construir os parâmetros de query string para a paginação
     get_copy = request.GET.copy()
@@ -102,6 +113,7 @@ def lancamentos(request):
         'lancamentos_com_saldos': lancamentos_paginados,
         'parameters': parameters,
         'saldo_geral': saldo_geral,
+        'saldo_anterior': saldo_anterior,
         'data_inicio': data_inicio_str,
         'data_fim': data_fim_str,
     }
@@ -112,196 +124,118 @@ def lancamentos(request):
 
 from django.forms.models import inlineformset_factory
 
-def ad_despesa(request):
-
+def adicionar_lancamento(request, tipo):
     if request.method == 'POST':
         valor = request.POST['valor']
-        valor = float(valor.replace('.', '').replace(',', '.')) * -1
+        if tipo == 'despesa':
+            valor = float(valor.replace('.', '').replace(',', '.')) * -1
+        else:  # tipo == 'receita'
+            valor = float(valor.replace('.', '').replace(',', '.'))
         valor = f'{valor:.2f}'
 
         valores = request.POST.copy()
         valores['valor'] = valor
-        valores['tipo'] = 'DESPESA'
+        valores['tipo'] = tipo.upper()
         valores['valor_total'] = 0
 
         lancamentoForm = LancamentosForm(valores)
         itemForm = ItemForm(valores)
+        anexoForm = AnexoForm(request.POST, request.FILES)
+
         if lancamentoForm.is_valid():
             lancamento = lancamentoForm.save()
             valores['lancamento'] = lancamento.id
             itemForm = ItemForm(valores)
+
+            if itemForm.is_valid():
+                item = itemForm.save(commit=False)
+                item.lancamento = lancamento
+                lancamento.valor_total = item.valor
+                item.save()
+                lancamento.save()
+
+            arquivos = anexoForm.cleaned_data.get('anexos', [])
+            for arquivo in arquivos:
+                Anexo.objects.create(lancamento=lancamento, arquivo=arquivo, descricao=request.POST.get('descricao', ''))
+
+            return redirect('fluxo:lancamentos')
+
+    else:
+        lancamentoForm = LancamentosForm()
+        itemForm = ItemForm()
+        anexoForm = AnexoForm()
+
+    context = {
+        'tipo': 'Despesa' if tipo == 'despesa' else 'Receita',
+        'simbolo': '-' if tipo == 'despesa' else '+',
+        'cor': 'text-danger' if tipo == 'despesa' else 'text-primary',
+        'titulo': 'Adicionar lançamentos',
+        'tipo1': 'Pago' if tipo == 'despesa' else 'Recebido',
+        'tipo2': 'À pagar' if tipo == 'despesa' else 'À receber',
+        'lancamentoForm': lancamentoForm,
+        'itemForm': itemForm,
+        'anexoForm': anexoForm,
+    }
+
+    return render(request, 'ad_lancamento.html', context)
+
+def edicao_lancamento(request, tipo, id):
+    lancamento = get_object_or_404(Lancamento, id=id, tipo=tipo.upper())
+
+    if request.method == 'POST':
+        valor = request.POST['valor']
+        if tipo == 'despesa':
+            valor = float(valor.replace('.', '').replace(',', '.')) * -1
+        else:  # tipo == 'receita'
+            valor = float(valor.replace('.', '').replace(',', '.'))
+        valor = f'{valor:.2f}'
+
+        valores = request.POST.copy()
+        valores['valor'] = valor
+        valores['tipo'] = tipo.upper()
+        valores['valor_total'] = 0
+
+        lancamentoForm = LancamentosForm(valores, instance=lancamento)
+        item = lancamento.itens.first() if lancamento.itens.exists() else None
+        itemForm = ItemForm(valores, instance=item)
+        anexoForm = AnexoForm(request.POST, request.FILES, instance=lancamento.anexos.first() if lancamento.anexos.exists() else None)
+
+        if lancamentoForm.is_valid() and itemForm.is_valid() and anexoForm.is_valid():
+            lancamento = lancamentoForm.save()
+
+            valores['lancamento'] = lancamento.id
+            itemForm = ItemForm(valores, instance=item)
             if itemForm.is_valid():
                 item = itemForm.save(commit=False)
                 item.lancamento = lancamento
                 lancamento.valor_total += item.valor
                 item.save()
                 lancamento.save()
-            return redirect('/lancamentos/')
+
+                anexo = anexoForm.save(commit=False)
+                anexo.lancamento = lancamento
+                anexo.save()
+
+            return redirect('fluxo:lancamentos')
+
     else:
-        lancamentoForm = LancamentosForm()
-        itemForm = ItemForm()
-
-    context = {
-        'tipo': 'Despesa',
-        'simbolo': '-',
-        'cor': 'text-danger',
-        'titulo': 'Adicionar lançamentos',
-        'tipo1': 'Pago',
-        'tipo2': 'À pagar',
-        'lancamentoForm': lancamentoForm,
-        'itemForm': itemForm,
-        # 'formset': formset,
-    }
-
-    return render(request, 'ad_lancamento.html', context)
-
-
-def ad_receita(request):
-
-    if request.method == 'POST':
-        valor = request.POST['valor']
-        valor = float(valor.replace('.', '').replace(',', '.'))
-        valor = f'{valor:.2f}'
-        
-        valores = request.POST.copy()
-        valores['valor'] = valor
-        valores['tipo'] = 'RECEITA'
-        valores['valor_total'] = 0
-        
-        lancamentoForm = LancamentosForm(valores)
-        itemForm = ItemForm(valores)
-        print(lancamentoForm.is_valid())
-        print(lancamentoForm.errors)
-        if lancamentoForm.is_valid():
-            lancamento = lancamentoForm.save()
-
-            valores['lancamento'] = lancamento.id
-            itemForm = ItemForm(valores)
-            print(itemForm.is_valid())
-            print(itemForm.errors)
-            if itemForm.is_valid():
-                item = itemForm.save(commit=False)
-                item.lancamento = lancamento
-                lancamento.valor_total += item.valor
-                item.save()
-                lancamento.save()
-
-            return redirect('/lancamentos/')
-    else:
-        lancamentoForm = LancamentosForm()
-        itemForm = ItemForm()
-
-    context = {
-        'tipo': 'Receita',
-        'simbolo': '+',
-        'cor': 'text-primary',
-        'titulo': 'Adicionar lançamentos',
-        'tipo1': 'Recebido',
-        'tipo2': 'À receber',
-        'lancamentoForm': lancamentoForm,
-        'itemForm': itemForm,
-    }
-
-    return render(
-        request,
-        'ad_lancamento.html',
-        context
-    )
-
-def ed_despesa(request, despesa_id):
-    print(request)
-    try:
-        lancamento = Lancamento.objects.get(id=despesa_id, tipo='DESPESA')
-    except Lancamento.DoesNotExist:
-        return redirect('/lancamentos/')
-
-    if request.method == 'POST':
-        valor = request.POST['valor']
-        valor = float(valor.replace('.', '').replace(',', '.')) * -1
-        valor = f'{valor:.2f}'
-
-        valores = request.POST.copy()
-        valores['valor'] = valor
-        valores['tipo'] = 'DESPESA'
-
-        lancamentoForm = LancamentosForm(valores, instance=lancamento)
-        itemForm = ItemForm(valores)
-
-        if lancamentoForm.is_valid():
-            lancamento = lancamentoForm.save()
-            valores['lancamento'] = lancamento.id
-            itemForm = ItemForm(valores, instance=lancamento.itens.first())
-
-            if itemForm.is_valid():
-                item = itemForm.save(commit=False)
-                item.lancamento = lancamento
-                item.save()
-
-            return redirect('/lancamentos/')
-    else:
+        valor_form = f'{abs(lancamento.itens.first().valor):.2f}' if lancamento.itens.exists() else ''
         lancamentoForm = LancamentosForm(instance=lancamento)
-        itemForm = ItemForm(instance=lancamento.itens.first())
-        print(lancamentoForm)
+        itemForm = ItemForm(instance=lancamento.itens.first() if lancamento.itens.exists() else None, initial={'valor': valor_form})
+        anexoForm = AnexoForm(instance=lancamento.anexos.first() if lancamento.anexos.exists() else None)
 
     context = {
-        'tipo': 'Despesa',
-        'simbolo': '-',
-        'cor': 'text-danger',
+        'tipo': 'Despesa' if tipo == 'despesa' else 'Receita',
+        'simbolo': '-' if tipo == 'despesa' else '+',
+        'cor': 'text-danger' if tipo == 'despesa' else 'text-primary',
         'titulo': 'Editar lançamento',
-        'tipo1': 'Pago',
-        'tipo2': 'À pagar',
+        'tipo1': 'Pago' if tipo == 'despesa' else 'Recebido',
+        'tipo2': 'À pagar' if tipo == 'despesa' else 'À receber',
         'lancamentoForm': lancamentoForm,
         'itemForm': itemForm,
-        'lancamento_id': despesa_id,
-    }
-
-    return render(request, 'ad_lancamento.html', context)
-
-def ed_receita(request, receita_id):
-    print(request)
-    try:
-        lancamento = Lancamento.objects.get(id=receita_id, tipo='RECEITA')
-    except Lancamento.DoesNotExist:
-        return redirect('/lancamentos/')
-
-    if request.method == 'POST':
-        valor = request.POST['valor']
-        valor = float(valor.replace('.', '').replace(',', '.'))
-        valor = f'{valor:.2f}'
-
-        valores = request.POST.copy()
-        valores['valor'] = valor
-        valores['tipo'] = 'DESPESA'
-
-        lancamentoForm = LancamentosForm(valores, instance=lancamento)
-        itemForm = ItemForm(valores)
-
-        if lancamentoForm.is_valid():
-            lancamento = lancamentoForm.save()
-            valores['lancamento'] = lancamento.id
-            itemForm = ItemForm(valores, instance=lancamento.itens.first())
-
-            if itemForm.is_valid():
-                item = itemForm.save(commit=False)
-                item.lancamento = lancamento
-                item.save()
-
-            return redirect('/lancamentos/')
-    else:
-        lancamentoForm = LancamentosForm(instance=lancamento)
-        itemForm = ItemForm(instance=lancamento.itens.first())
-        print(lancamentoForm)
-
-    context = {
-        'tipo': 'Receita',
-        'simbolo': '+',
-        'cor': 'text-danger',
-        'titulo': 'Editar lançamento',
-        'tipo1': 'Recebido',
-        'tipo2': 'À receber',
-        'lancamentoForm': lancamentoForm,
-        'itemForm': itemForm,
-        'lancamento_id': receita_id,
+        'anexoForm': anexoForm,
+        'lancamento_id': id,
+        'apagar': True,
     }
 
     return render(request, 'ad_lancamento.html', context)

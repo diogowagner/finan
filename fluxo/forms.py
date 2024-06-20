@@ -3,7 +3,6 @@ from django import forms
 from .models import Lancamento, Anexo, Item
 
 
-
 class LancamentosForm(ModelForm):
 
     class Meta:
@@ -42,10 +41,27 @@ ItemFormSet = inlineformset_factory(Lancamento, Item, form=ItemForm, extra=1, ca
 
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
 class AnexoForm(forms.ModelForm):
     class Meta:
         model = Anexo
-        fields = ['arquivo']
+        fields = ('arquivo', 'descricao')
         widgets = {
-            'arquivo': forms.FileInput(attrs={'class': "custom-file-input"})
+            'arquivo': MultipleFileInput(),
+            'descricao': forms.TextInput(attrs={'class': 'form-control'}),
         }

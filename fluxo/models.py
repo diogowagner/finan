@@ -36,7 +36,6 @@ class Lancamento(models.Model):
         return f'{self.data_lancamento} - {self.tipo}'
 
 
-
 class Anexo(models.Model):
     lancamento = models.ForeignKey(
         Lancamento, 
@@ -45,6 +44,7 @@ class Anexo(models.Model):
         verbose_name="Lançamento"
     )
     arquivo = models.FileField(upload_to='anexos/', verbose_name="Arquivo", blank=True, null=True)
+    descricao = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f"Anexo para {self.lancamento.data_lancamento} - {self.lancamento.tipo}"
@@ -57,7 +57,7 @@ class Item(models.Model):
         Categoria,
         on_delete=models.CASCADE,
         blank=False, null=False,
-        verbose_name="Categoria"
+        verbose_name="Categoria",
     )
     centro_custo_lucro = models.CharField(max_length=100, blank=True, null=True)
     fornecedor_cliente = models.ForeignKey(
@@ -74,7 +74,7 @@ class Item(models.Model):
         Lancamento,
         on_delete=models.CASCADE,
         related_name='itens',
-        verbose_name="Lançamento"
+        verbose_name="Lançamento",
     )
 
     def __str__(self):

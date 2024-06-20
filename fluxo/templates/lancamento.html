@@ -15,10 +15,10 @@
                 <form method="GET" action=".">
                     <div class="row">
                         <div class="col-3 col-md-2">
-                            <a class="btn btn-primary btn btn-block" href="{% url 'fluxo:ad_receita' %}" role="button">Ad Receita</a>
+                            <a class="btn btn-primary btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='RECEITA' %}" role="button">Ad Receita</a>
                         </div>
                         <div class="col-3 col-md-2">
-                            <a class="btn btn-danger btn btn-block" href="{% url 'fluxo:ad_despesa' %}" role="button">Ad Despesa</a>
+                            <a class="btn btn-danger btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='DESPESA'%}" role="button">Ad Despesa</a>
                         </div>
                         <div class="col-md-3 mb-3">
                             <input type="date" name="data_inicio" class="form-control" id="id_data_inicio" value="{{ data_inicio }}" placeholder="Data Início">
@@ -27,7 +27,7 @@
                             <input type="date" name="data_fim" class="form-control" id="id_data_fim" value="{{ data_fim }}" placeholder="Data Fim">
                         </div>
                         <div class="col-3 col-md-2">
-                            <button type="submit" class="btn btn-secondary btn btn-block">Filtros</button>
+                            <button type="submit" class="btn btn-secondary btn btn-block">Filtrar</button>
                         </div>
                     </div>
                 </form>
@@ -46,14 +46,22 @@
                         </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>Saldo anterior</td>
+                                <td class="text-right">{{ saldo_anterior|currency }}</td>
+                                <td class="text-right"></td>
+                                <td></td>
+                            </tr>
                             {% for item in lancamentos_com_saldos %}
                             <tr>
                                 <td>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
                                 <td>{{ item.lancamento.itens.first.categoria }}</td>
-                                <td><a class="text-info" href="../../{{ item.lancamento.tipo|lower }}/edit/{{ item.lancamento.id }}" >{{ item.lancamento.itens.first.descricao }}</a></td>
-                                <td class="text-right">{{ item.lancamento.itens.first.valor|currency }}</td>
+                                <td><a class="text-info" href="{% url "fluxo:edicao_lancamento" tipo=item.lancamento.tipo id=item.lancamento.id %}" >{{ item.lancamento.itens.first.descricao }}</a></td>
+                                <td class="text-right">{{ item.lancamento.valor_total|currency }}</td>
                                 <td class="text-right">{{ item.saldo|currency }}</td>
-                                <td>{{ item.lancamento.situação }}</td>
+                                <td>{{ item.lancamento.situacao }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

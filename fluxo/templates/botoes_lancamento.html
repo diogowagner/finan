@@ -2,9 +2,9 @@
 <div class="col-md-12 order-md-1">
     <div class="row">
         <div class="col-3 col-md-2">
-            <a class="btn btn-primary btn btn-block" href="{% url 'fluxo:ad_receita' %}" role="button">Ad Receita</a>
+            <a class="btn btn-primary btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='RECEITA' %}" role="button">Ad Receita</a>
         </div>
         <div class="col-3 col-md-2">
-            <a class="btn btn-danger btn btn-block" href="{% url 'fluxo:ad_despesa' %}" role="button">Ad Despesa</a>
+            <a class="btn btn-danger btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='DESPESA' %}" role="button">Ad Despesa</a>
         </div>
 </div>
