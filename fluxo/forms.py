@@ -3,7 +3,38 @@ from django import forms
 from .models import Lancamento, Anexo, Item
 
 
-class LancamentosForm(ModelForm):
+class BaseLancamentosForm(ModelForm):
+    class Meta:
+        model = Lancamento
+        fields = '__all__'
+        widgets = {
+            'conta': forms.Select(attrs={'class': "form-control"}),
+            'data_lancamento': forms.DateInput(attrs={'class': "form-control", 'type': "date"}, format='%Y-%m-%d'),
+            'observacoes': forms.Textarea(attrs={'rows': 3, 'class': "form-control"}),
+            'competencia': forms.DateInput(attrs={'class': "form-control", 'type': "date"}),  # Adicionado para competência
+            'tipo_documento': forms.TextInput(attrs={'class': "form-control"}),
+            'numero_documento': forms.TextInput(attrs={'class': "form-control"}),
+            'tipo': forms.HiddenInput(),
+            'situacao': forms.RadioSelect(attrs={'class': "form-check"}),
+        }
+
+class LancamentosOpForm(BaseLancamentosForm):
+    class Meta(BaseLancamentosForm.Meta):
+        pass  # Usa a Meta do formulário base
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['conta'].required = False  # Define o campo 'conta' como opcional
+
+class LancamentosObForm(BaseLancamentosForm):
+    class Meta(BaseLancamentosForm.Meta):
+        pass  # Usa a Meta do formulário base
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['conta'].required = True  # Define o campo 'conta' como obrigatório
+
+
 
     class Meta:
         model = Lancamento
@@ -11,13 +42,14 @@ class LancamentosForm(ModelForm):
         widgets = {
             'conta': forms.Select(attrs={'class': "form-control"}),
             'data_lancamento': forms.DateInput(attrs={'class': "form-control", 'type': "date"}, format='%Y-%m-%d'),
-            'observacoes': forms.Textarea(attrs={'rows': 5, 'class': "form-control"}),
+            'observacoes': forms.Textarea(attrs={'rows': 3, 'class': "form-control"}),
             'competencia': forms.DateInput(attrs={'class': "form-control", 'type': "date"}),  # Adicionado para competência
             'tipo_documento': forms.TextInput(attrs={'class': "form-control"}),
             'numero_documento': forms.TextInput(attrs={'class': "form-control"}),
             'tipo': forms.HiddenInput(),
             'situacao': forms.RadioSelect(attrs={'class': "form-check"}),
         }
+
 
 class ItemForm(ModelForm):
 

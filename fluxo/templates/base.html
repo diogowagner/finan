@@ -120,31 +120,51 @@
         });
     </script>
     <script>
-        var select2Messages = {
-            noResults: function() {
-                return "Nenhum resultado encontrado";
-            },
-        }
         $(document).ready(function() {
+            var select2Messages = {
+                noResults: function() {
+                    return "Nenhum resultado encontrado";
+                },
+                placeholders: {
+                    id_categoria: "Selecione uma categoria",
+                    id_conta: "Conta",
+                    id_centro_custo_lucro: "Centro de custo/lucro",
+                    id_forma_pagamento: "Forma de pagamento",
+                    id_fornecedor_cliente: "Selecione um fornecedor/cliente"
+                }
+            };
+    
             $('#id_categoria').select2({
-                language: select2Messages
+                language: select2Messages,
+                placeholder: select2Messages.placeholders.id_categoria
             });
+    
             $('#id_conta').select2({
-                language: select2Messages
+                language: select2Messages,
+                placeholder: select2Messages.placeholders.id_conta
             });
+    
             $('#id_centro_custo_lucro').select2({
-                language: select2Messages
+                language: select2Messages,
+                placeholder: select2Messages.placeholders.id_centro_custo_lucro
             });
+    
             $('#id_forma_pagamento').select2({
-                language: select2Messages
+                language: select2Messages,
+                placeholder: select2Messages.placeholders.id_forma_pagamento
             });
+    
             $('#id_fornecedor_cliente').select2({
-                language: select2Messages
+                language: select2Messages,
+                placeholder: select2Messages.placeholders.id_fornecedor_cliente
+            });
+
+
+            $('#id_categoria, #id_conta, #id_centro_custo_lucro, #id_forma_pagamento, #id_fornecedor_cliente').on('input', function() {
+                $(this).select2('open');
             });
         });
-        
     </script>
-
 </main>
 </body>
 </html>

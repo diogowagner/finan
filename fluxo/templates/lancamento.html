@@ -5,86 +5,139 @@
 {% block conteudo %}
 
 <main role="main" class="flex-shrink-0">
-    <div class="container">
-        <div class="py-5 text-left">
-            <h5 class="mt-4">{{titulo}}</h5>
+    <br>
+    <div class="container py-5">        
+        <div class="row">
+            <div class="col-lg-12 order-md-1">
+            <form method="GET" action=".">
+                <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="text-left">
+                        <h5>{{ titulo }}</h5>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-3">
+                        {{ lancamentoForm.conta }}
+                    <div class="invalid-feedback">
+                        Por favor, escolha uma conta.
+                    </div>
+                </div>
+                <div class="col-lg-5 mb-6 text-right">
+                    <a href="?filtro=hoje" >Hoje</a> |
+                    <a href="?filtro=semana" >Últimos 7 dias</a> |
+                    <a href="?filtro=mes" >Últimos 30 dias</a> |
+                    <a href="?filtro=ano" >Último ano</a>
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <a class="btn btn-primary btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='RECEITA' %}" role="button">Ad Receita</a>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <a class="btn btn-danger btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='DESPESA' %}" role="button">Ad Despesa</a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <input type="date" name="data_inicio" class="form-control" id="id_data_inicio" value="{{ data_inicio }}" placeholder="Data Início">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <input type="date" name="data_fim" class="form-control" id="id_data_fim" value="{{ data_fim }}" placeholder="Data Fim">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <button type="submit" class="btn btn-secondary btn btn-block">Filtrar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
         </div>
         <div class="row">
-
-            <div class="col-md-12 order-md-1">
-                <form method="GET" action=".">
-                    <div class="row">
-                        <div class="col-3 col-md-2">
-                            <a class="btn btn-primary btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='RECEITA' %}" role="button">Ad Receita</a>
-                        </div>
-                        <div class="col-3 col-md-2">
-                            <a class="btn btn-danger btn btn-block" href="{% url 'fluxo:adicionar_lancamento' tipo='DESPESA'%}" role="button">Ad Despesa</a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <input type="date" name="data_inicio" class="form-control" id="id_data_inicio" value="{{ data_inicio }}" placeholder="Data Início">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <input type="date" name="data_fim" class="form-control" id="id_data_fim" value="{{ data_fim }}" placeholder="Data Fim">
-                        </div>
-                        <div class="col-3 col-md-2">
-                            <button type="submit" class="btn btn-secondary btn btn-block">Filtrar</button>
-                        </div>
-                    </div>
-                </form>
-
+            <div class="col-lg-12 order-md-1">
                 <br>
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-sm">
                         <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Categoria</th>
-                            <th>Descrição</th>
-                            <th class="text-right">Valor</th>
-                            <th class="text-right">Saldo</th>
-                            <th>Situação</th>
-                        </tr>
+                            <tr>
+                                <th>Data</th>
+                                <th>Categoria</th>
+                                <th>Descrição</th>
+                                <th class="text-right">Valor</th>
+                                <th class="text-right">Saldo</th>
+                                <th>Situação</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td></td>
                                 <td></td>
                                 <td>Saldo anterior</td>
-                                <td class="text-right">{{ saldo_anterior|currency }}</td>
-                                <td class="text-right"></td>
+                                <td class="text-right text-success">{{ saldo_anterior|currency }}</td>
+                                <td class="text-right "></td>
                                 <td></td>
                             </tr>
                             {% for item in lancamentos_com_saldos %}
-                            <tr>
-                                <td>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
-                                <td>{{ item.lancamento.itens.first.categoria }}</td>
-                                <td><a class="text-info" href="{% url "fluxo:edicao_lancamento" tipo=item.lancamento.tipo id=item.lancamento.id %}" >{{ item.lancamento.itens.first.descricao }}</a></td>
-                                <td class="text-right">{{ item.lancamento.valor_total|currency }}</td>
-                                <td class="text-right">{{ item.saldo|currency }}</td>
-                                <td>{{ item.lancamento.situacao }}</td>
-                            </tr>
+                                <tr>
+                                    <td class='font-weight-bold'>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
+                                    <td><span class="text-white" style="background-color:{{item.lancamento.itens.first.categoria.cor}};border: 1px solid {{item.lancamento.itens.first.categoria.cor}};">{{ item.lancamento.itens.first.categoria }}</span></td>
+                                    <td>
+                                        <a class="text-info" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id %}">
+                                            {{ item.lancamento.itens.first.descricao }}
+                                        </a>
+                                    </td>
+                                    <td class="text-right text-success">{{ item.lancamento.valor_total|currency }}</td>
+
+                                    {% if item.lancamento.situacao == 'PAGO' %}
+                                        <td class="text-right">{{ item.saldo|currency }}</td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                    
+                                    {% if item.lancamento.situacao == 'PAGO' %}
+                                        <td class='text-center'>Pago</td>
+                                    {% else %}
+                                        <td class='text-center'>A Pagar</td>
+                                    {% endif %}
+                                    
+                                </tr>
+                                {% for subitem in item.itens %}
+                                    <tr>
+                                        <td>{{ subitem.data_lancamento|date:"d M" }}</td>
+                                        <td>{{ subitem.categoria }}</td>
+                                        <td>{{ subitem.descricao }}</td>
+                                        <td class="text-right text-success">{{ subitem.valor|currency }}</td>
+                                        <td class="text-right"></td>
+                                        <td></td>
+                                    </tr>
+                                {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-
-                <div>
-                    <p class="font-weight-bold text-right">Saldo Geral: R$ {{ saldo_geral }}</p>
-                </div>
-
                 <nav aria-label="Page navigation" class="navigation">
                     <ul class="pagination pagination-sm">
                         {% if lancamentos_com_saldos.has_previous %}
-                        <li class="page-item"><a href="?page=1&{{ parameters }}" class="page-link">&laquo; Primeiro</a></li>
-                        <li class="page-item"><a href="?page={{ lancamentos_com_saldos.previous_page_number }}&{{ parameters }}" class="page-link">Anterior</a></li>
+                            <li class="page-item">
+                                <a href="?page=1&{{ parameters }}" class="page-link">&laquo; Primeiro</a>
+                            </li>
+                            <li class="page-item">
+                                <a href="?page={{ lancamentos_com_saldos.previous_page_number }}&{{ parameters }}" class="page-link">Anterior</a>
+                            </li>
                         {% endif %}
-                        <li class="page-item"><a href="#" class="page-link">Página {{ lancamentos_com_saldos.number }} de {{ lancamentos_com_saldos.paginator.num_pages }}</a></li>
+                        <li class="page-item">
+                            <a href="#" class="page-link">Página {{ lancamentos_com_saldos.number }} de {{ lancamentos_com_saldos.paginator.num_pages }}</a>
+                        </li>
                         {% if lancamentos_com_saldos.has_next %}
-                        <li class="page-item"><a href="?page={{ lancamentos_com_saldos.next_page_number }}&{{ parameters }}" class="page-link">Próximo</a></li>
-                        <li class="page-item"><a href="?page={{ lancamentos_com_saldos.paginator.num_pages }}&{{ parameters }}" class="page-link">Último &raquo;</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ lancamentos_com_saldos.next_page_number }}&{{ parameters }}" class="page-link">Próximo</a>
+                            </li>
+                            <li class="page-item">
+                                <a href="?page={{ lancamentos_com_saldos.paginator.num_pages }}&{{ parameters }}" class="page-link">Último &raquo;</a>
+                            </li>
                         {% endif %}
                     </ul>
                 </nav>
+                <div>
+                    <p class="font-weight-bold text-right">Saldo Anterior: R$ {{ saldo_anterior|currency }}</p>
+                    <p class="font-weight-bold text-right">Saldo: R$ {{ saldo_geral|currency }}</p>
+                </div>
             </div>
         </div>
     </div>

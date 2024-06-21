@@ -13,9 +13,9 @@
 
     {% include "botoes_lancamento.html" %}
 
-<hr class="mb-2">
+<hr class="mb-1">
 <h4 class="mb-3 {{ cor }}">{{ tipo }}</h4>
-<hr class="mb-2">
+<hr class="mb-4">
 <form id="lForm" class="needs-validation" method="post">
     {% csrf_token %}
     <div class="row">
@@ -31,16 +31,13 @@
         </div>
         <div class="col-md-2 mb-2">
             <div id="inputField">
-                <label for="parcelas">Parcelas</label>
-                <input type="number" name="parcelas" id="parcelas" class="form-control">
+                <input type="number" name="parcelas" id="parcelas" class="form-control" placeholder='Parcelas'>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <label for="date">Data</label>
             {{ lancamentoForm.data_lancamento }}
         </div>
         <div class="col-md-3 mb-3">
-            <label for="conta">Conta</label>
             {{ lancamentoForm.conta }}
             <div class="invalid-feedback">
                 Por favor, escolha uma conta.
@@ -48,18 +45,16 @@
         </div>
     </div>
 
-    <hr class="mb-1">
+    <hr class="mb-2">
 
     <div class="row">
         <div class="col-md-9 mb-3">
-            <label for="descricao">Item</label>
             {{ itemForm.descricao }}
             <div class="invalid-feedback">
                 Por favor, insira uma descrição.
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <label for="valor">Valor R$</label>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">{{ simbolo }}</span>
@@ -74,21 +69,18 @@
 
     <div class="row">
         <div class="col-md-6 mb-4">
-            <label for="categoria">Categoria</label>
             {{ itemForm.categoria }}
             <div class="invalid-feedback">
                 Por favor, escolha uma categoria válida.
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <label for="centro">Centro custo / Lucro</label>
             {{ itemForm.centro_custo_lucro }}
             <div class="invalid-feedback">
                 Por favor, insira um valor válido.
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <label for="estado">Forma pagamento</label>
             {{ itemForm.forma_pagamento }}
             <div class="invalid-feedback">
                 Por favor, insira uma forma de pagamento válida.
@@ -98,7 +90,6 @@
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="estado">Fornecedor</label>
             {{ itemForm.fornecedor_cliente }}
             <div class="invalid-feedback">
                 Por favor, insira um fornecedor válido.
@@ -106,16 +97,15 @@
         </div>
     </div>
 
-    <hr class="mb-2">
+    <hr class="mb-1">
 
     <div class="row">
         <div class="col-md-3 mb-3">
-            <label for="anexos">Arquivos:</label>
             {{ anexoForm.arquivo }}
         </div>
     </div>
 
-    <hr class="mb-2">
+    <hr class="mb-1">
 
     <div class="row">
         <div class="col-md-6 mb-3">
@@ -127,7 +117,7 @@
             {{ lancamentoForm.tipo }}
         </div>
     </div>
-    <hr class="mb-4">
+    <hr class="mb-1">
     <div class="row">
         <div class="col-md-2 mb-2">
             <button class="btn btn-primary btn-md btn-block" type="submit">Gravar</button>
