@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lancamento, Anexo, Item, Categoria
 from django.core.paginator import Paginator
-from .forms import LancamentosOpForm, LancamentosObForm, AnexoForm, ItemForm
+from .forms import LancamentosOpForm, LancamentosObForm, AnexoForm, ItemForm, CategoriaForm, ContaForm
 from django.http import QueryDict
 from django.forms import modelformset_factory
 from django.db.models import Sum
@@ -11,13 +11,45 @@ from . import forms, models
 
 def index(request):
 
-    context = {}
+    context = {
+        'is_inicio': True,
+    }
 
     return render(
         request,
         'index.html',
         context
     )
+
+def cadastro_categoria(request):
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/lancamentos/')
+    else:
+        form = CategoriaForm()
+    
+    context = {
+        'form': form,
+        'titulo': 'Criar Categoria'
+    }
+    return render(request, 'cad_categoria.html', context)
+
+def cadastro_conta(request):
+    if request.method == 'POST':
+        form = ContaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/lancamentos/')
+    else:
+        form = ContaForm()
+    
+    context = {
+        'form': form,
+        'titulo': 'Criar Conta'
+    }
+    return render(request, 'cad_conta.html', context)
 
 def filtros(request):
 
@@ -73,9 +105,12 @@ def lancamentos(request):
     saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
     saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
 
+    # Calcular saldo anterior considerando todos os lançamentos antes da data_inicio
     saldo_anterior = 0
     if data_inicio:
-        saldo_anterior = Lancamento.objects.filter(data_lancamento__lt=data_inicio).aggregate(Sum('itens__valor'))['itens__valor__sum']
+        saldo_anterior = Item.objects.filter(
+            lancamento__data_lancamento__lt=data_inicio
+        ).aggregate(Sum('valor'))['valor__sum']
         saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
 
     lancamentos_com_saldos = []
@@ -83,15 +118,15 @@ def lancamentos(request):
 
     for lancamento in lancamentos_list:
         itens_do_lancamento = lancamento.itens.all()
+        saldo_lancamento = sum(item.valor for item in itens_do_lancamento)
         if lancamento.situacao == 'PAGO':
-            saldo_lancamento = sum(item.valor for item in itens_do_lancamento)
             saldo_acumulado += saldo_lancamento
         lancamentos_com_saldos.append({
             'lancamento': lancamento,
             'saldo': saldo_acumulado,
         })
 
-    paginator = Paginator(lancamentos_com_saldos, 10)
+    paginator = Paginator(lancamentos_com_saldos, 20)
     page_number = request.GET.get('page')
     lancamentos_paginados = paginator.get_page(page_number)
 
@@ -105,7 +140,7 @@ def lancamentos(request):
         'is_lancamento': True,
         'lancamentos_com_saldos': lancamentos_paginados,
         'parameters': parameters,
-        'saldo_geral': saldo_acumulado,
+        'saldo_geral': saldo_geral,
         'saldo_anterior': saldo_anterior,
         'data_inicio': data_inicio.isoformat() if data_inicio else '',
         'data_fim': data_fim.isoformat() if data_fim else '',
@@ -114,6 +149,7 @@ def lancamentos(request):
     }
 
     return render(request, 'lancamento.html', context)
+
 
 
 from django.forms.models import inlineformset_factory
@@ -146,11 +182,11 @@ def adicionar_lancamento(request, tipo):
                 lancamento.valor_total = item.valor
                 item.save()
                 lancamento.save()
-
+            print(anexoForm.is_valid())
             if anexoForm.is_valid():
-                arquivos = anexoForm.cleaned_data.get('anexos', [])
-                for arquivo in arquivos:
-                    Anexo.objects.create(lancamento=lancamento, arquivo=arquivo, descricao=request.POST.get('descricao', ''))
+                arquivos = anexoForm.save(commit=False)
+                arquivos.lancamento = lancamento
+                arquivos.save()
 
             return redirect('/lancamentos/')
     else:

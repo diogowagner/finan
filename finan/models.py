@@ -3,6 +3,9 @@ from colorfield.fields import ColorField
 from utils.rands import slugify_new, random_color
 
 class Categoria(models.Model):
+    class Meta:
+        ordering = ['descricao']
+
     MISTA = 'MI'
     DESPESA = 'DE'
     RECEITA = 'RE'

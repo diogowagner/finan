@@ -11,12 +11,12 @@
         </div>
 <div class="row">
 
-    {% include "botoes_lancamento.html" %}
+    {% include "partials/botoes_lancamento.html" %}
 
 <hr class="mb-1">
 <h4 class="mb-3 {{ cor }}">{{ tipo }}</h4>
 <hr class="mb-4">
-<form id="lForm" class="needs-validation" method="post">
+<form id="lForm" class="needs-validation" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row">
         <div class="col-md-4 mb-3">
@@ -101,6 +101,7 @@
 
     <div class="row">
         <div class="col-md-3 mb-3">
+            <label for="anexos">Anexo</label>
             {{ anexoForm.arquivo }}
         </div>
     </div>
@@ -131,4 +132,83 @@
     <br>
 </form>
 </div>
+</main>
 {% endblock conteudo %}
+
+{% block scripts %}
+
+<script>        
+    $('.valor').mask('#.##0,00', {reverse: true});
+    $('.telefone').mask('(00) 0 0000-0000');
+    $('.estado').mask('AA');
+    $('.cpf').mask('000-000.000-00');
+    $('.cnpj').mask('00.000.000/0000-00');
+    $('.rg').mask('00.000.000-0');
+    $('.cep').mask('00000-000');
+    $('.dataNascimento').mask('00/00/0000');
+    $('.placaCarro').mask('AAA-0000');
+    $('.horasMinutos').mask('00:00');
+    $('.cartaoCredito').mask('0000 0000 0000 0000');        
+</script>
+
+<script>
+    document.querySelectorAll('input[name="situacao"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            var inputField = document.getElementById('inputField');
+            if (document.getElementById('id_situacao_1').checked) {
+                inputField.style.display = 'block';
+            } else {
+                inputField.style.display = 'none';
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        var select2Messages = {
+            noResults: function() {
+                return "Nenhum resultado encontrado";
+            },
+            placeholders: {
+                id_categoria: "Selecione uma categoria",
+                id_conta: "Conta",
+                id_centro_custo_lucro: "Centro de custo/lucro",
+                id_forma_pagamento: "Forma de pagamento",
+                id_fornecedor_cliente: "Selecione um fornecedor/cliente"
+            }
+        };
+
+        $('#id_categoria').select2({
+            language: select2Messages,
+            placeholder: select2Messages.placeholders.id_categoria
+        });
+
+        $('#id_conta').select2({
+            language: select2Messages,
+            placeholder: select2Messages.placeholders.id_conta
+        });
+
+        $('#id_centro_custo_lucro').select2({
+            language: select2Messages,
+            placeholder: select2Messages.placeholders.id_centro_custo_lucro
+        });
+
+        $('#id_forma_pagamento').select2({
+            language: select2Messages,
+            placeholder: select2Messages.placeholders.id_forma_pagamento
+        });
+
+        $('#id_fornecedor_cliente').select2({
+            language: select2Messages,
+            placeholder: select2Messages.placeholders.id_fornecedor_cliente
+        });
+
+
+        $('#id_categoria, #id_conta, #id_centro_custo_lucro, #id_forma_pagamento, #id_fornecedor_cliente').on('input', function() {
+            $(this).select2('open');
+        });
+    });
+</script>
+
+{% endblock scripts %}
+

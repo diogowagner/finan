@@ -1,6 +1,8 @@
 from django.db import models
 from finan.models import Conta, Categoria
 from cadastros.models import FornecedorCliente
+from django.utils import timezone
+import os
 
 class Lancamento(models.Model):
     DESPESA = 'DESPESA'
@@ -43,11 +45,15 @@ class Anexo(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Lançamento"
     )
-    arquivo = models.FileField(upload_to='anexos/', verbose_name="Arquivo", blank=True, null=True)
-    descricao = models.CharField(max_length=255, blank=True)
+    arquivo = models.FileField(upload_to='anexos/')
 
-    def __str__(self):
-        return f"Anexo para {self.lancamento.data_lancamento} - {self.lancamento.tipo}"
+    def save(self, *args, **kwargs):
+        if self.arquivo and not self.pk:
+            filename, ext = os.path.splitext(self.arquivo.name)
+            timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+            new_filename = f"{self.lancamento.id}_{timestamp}{ext}"
+            self.arquivo.name = new_filename
+        super(Anexo, self).save(*args, **kwargs)
 
 
 class Item(models.Model):

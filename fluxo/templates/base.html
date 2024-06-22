@@ -2,14 +2,11 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <!-- Meta tags Obrigatórias -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-    <!-- Estilos customizados para esse template -->
     <link href="{% static 'fluxo/bootstrap/css/form-validation.css' %}" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -26,17 +23,11 @@
             margin-top: 0.3%;
         }
     </style>
-    {% comment %} <style>
-        .item-form input[type="checkbox"] {
-            display: none;
-        }
-    </style> {% endcomment %}
 </head>
 
 <body class="bg-light">
 
 <header>
-    <!-- Navbar fixa -->
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
         <a class="navbar-brand" href="">Finan</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,18 +35,46 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-            <a class="nav-link" href="/">Início <span class="sr-only">(atual)</span></a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="/lancamentos/">Lançamentos</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="#">Relatórios</a>
-            </li>
+            {% if is_inicio %}
+                <li class="nav-item active">
+            {% else %}
+                <li class="nav-item">
+            {% endif %}
+                <a class="nav-link" href="/">Início</a>
+                </li>
+            {% if is_lancamento %}
+                <li class="nav-item active">
+            {% else %}
+                <li class="nav-item">
+            {% endif %}
+                <a class="nav-link" href="{% url "fluxo:lancamentos" %}">Lançamentos</a>
+                </li>
+            {% if is_relatorios %}
+                <li class="nav-item active">
+            {% else %}
+                <li class="nav-item">
+            {% endif %}
+                <a class="nav-link" href="#">Relatórios</a>
+                </li>
         </ul>
-        <form class="form-inline mt-2 mt-md-0">                  
-            <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Sair</button>
+        <form class="form-inline mt-2 mt-md-0">
+            <div class="col-6 dropdown">
+                <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Cadastros
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="{% url "fluxo:cadastro_categoria" %}">Categorias</a>
+                    <a class="dropdown-item" href="{% url "fluxo:cadastro_conta" %}">Conta</a>
+                    <a class="dropdown-item" href="#">Fornecedor</a>
+                    <a class="dropdown-item" href="#">Cliente</a>
+                    <a class="dropdown-item" href="#">Usuário</a>
+                </div>
+            </div>
+        </form>
+        <form class="form-inline mt-2 mt-md-0">
+            <div class='col'>
+            <a class="btn btn-outline-light my-2 my-sm-0" href="{% url 'fluxo:lancamentos' %}">Sair</a>
+            </div>
         </form>
         </div>
     </nav>
@@ -63,24 +82,17 @@
 
     {% block conteudo %}{% endblock conteudo %}
 
-</div>
-</div>
-    <!-- JavaScript (Opcional) -->
-    <!-- jQuery primeiro, depois Popper.js, depois Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        // Exemplo de JavaScript para desativar o envio do formulário, se tiver algum campo inválido.
         (function() {
         'use strict';
 
         window.addEventListener('load', function() {
-            // Selecione todos os campos que nós queremos aplicar estilos Bootstrap de validação customizados.
             var forms = document.getElementsByClassName('needs-validation');
 
-            // Faz um loop neles e previne envio
             var validation = Array.prototype.filter.call(forms, function(form) {
             form.addEventListener('submit', function(event) {
                 if (form.checkValidity() === false) {
@@ -94,77 +106,8 @@
         })();
     </script>
     <script src="https://igorescobar.github.io/jQuery-Mask-Plugin/js/jquery.mask.min.js"></script>
-    <script>        
-        $('.valor').mask('#.##0,00', {reverse: true});
-        $('.telefone').mask('(00) 0 0000-0000');
-        $('.estado').mask('AA');
-        $('.cpf').mask('000-000.000-00');
-        $('.cnpj').mask('00.000.000/0000-00');
-        $('.rg').mask('00.000.000-0');
-        $('.cep').mask('00000-000');
-        $('.dataNascimento').mask('00/00/0000');
-        $('.placaCarro').mask('AAA-0000');
-        $('.horasMinutos').mask('00:00');
-        $('.cartaoCredito').mask('0000 0000 0000 0000');        
-    </script>
-    <script>
-        document.querySelectorAll('input[name="situacao"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                var inputField = document.getElementById('inputField');
-                if (document.getElementById('id_situacao_1').checked) {
-                    inputField.style.display = 'block';
-                } else {
-                    inputField.style.display = 'none';
-                }
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            var select2Messages = {
-                noResults: function() {
-                    return "Nenhum resultado encontrado";
-                },
-                placeholders: {
-                    id_categoria: "Selecione uma categoria",
-                    id_conta: "Conta",
-                    id_centro_custo_lucro: "Centro de custo/lucro",
-                    id_forma_pagamento: "Forma de pagamento",
-                    id_fornecedor_cliente: "Selecione um fornecedor/cliente"
-                }
-            };
-    
-            $('#id_categoria').select2({
-                language: select2Messages,
-                placeholder: select2Messages.placeholders.id_categoria
-            });
-    
-            $('#id_conta').select2({
-                language: select2Messages,
-                placeholder: select2Messages.placeholders.id_conta
-            });
-    
-            $('#id_centro_custo_lucro').select2({
-                language: select2Messages,
-                placeholder: select2Messages.placeholders.id_centro_custo_lucro
-            });
-    
-            $('#id_forma_pagamento').select2({
-                language: select2Messages,
-                placeholder: select2Messages.placeholders.id_forma_pagamento
-            });
-    
-            $('#id_fornecedor_cliente').select2({
-                language: select2Messages,
-                placeholder: select2Messages.placeholders.id_fornecedor_cliente
-            });
 
+    {% block scripts %}{% endblock scripts %}
 
-            $('#id_categoria, #id_conta, #id_centro_custo_lucro, #id_forma_pagamento, #id_fornecedor_cliente').on('input', function() {
-                $(this).select2('open');
-            });
-        });
-    </script>
-</main>
 </body>
 </html>
