@@ -62,8 +62,9 @@ def filtros(request):
     )
 
 def lancamentos(request):
-    titulo = 'Lista lançamentos'
-    
+    titulo = 'Lançamentos'
+
+    situacao_selecionada = request.GET.get('situacao')
     filtro = request.GET.get('filtro')
     data_inicio = request.GET.get('data_inicio')
     data_fim = request.GET.get('data_fim')
@@ -95,6 +96,7 @@ def lancamentos(request):
             data_inicio = hoje - timedelta(days=7)
             data_fim = hoje
 
+    # Filtrar os lançamentos com base nos filtros aplicados
     lancamentos_list = Lancamento.objects.filter(
         data_lancamento__range=(data_inicio, data_fim)
     ).order_by("data_lancamento", "pk").prefetch_related('itens')
@@ -102,8 +104,8 @@ def lancamentos(request):
     if conta_selecionada:
         lancamentos_list = lancamentos_list.filter(conta_id=conta_selecionada)
 
-    saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
-    saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
+    if situacao_selecionada:
+        lancamentos_list = lancamentos_list.filter(situacao=situacao_selecionada)
 
     # Calcular saldo anterior considerando todos os lançamentos antes da data_inicio
     saldo_anterior = 0
@@ -113,8 +115,14 @@ def lancamentos(request):
         ).aggregate(Sum('valor'))['valor__sum']
         saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
 
+    saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
+    saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
+
+    # Calcular saldo acumulado para cada lançamento
     lancamentos_com_saldos = []
     saldo_acumulado = saldo_anterior
+    total_entradas = 0
+    total_saidas = 0
 
     for lancamento in lancamentos_list:
         itens_do_lancamento = lancamento.itens.all()
@@ -130,18 +138,40 @@ def lancamentos(request):
     page_number = request.GET.get('page')
     lancamentos_paginados = paginator.get_page(page_number)
 
+    if situacao_selecionada == 'APAGAR':
+        saldo_pagina = 0
+    elif lancamentos_paginados:
+        saldo_paginado = lancamentos_paginados[0]['saldo']
+        valor_total_paginado = lancamentos_paginados[0]['lancamento'].valor_total
+
+        saldo_anterior = saldo_paginado - valor_total_paginado
+        saldo_pagina = saldo_anterior
+    else:
+        saldo_pagina = saldo_acumulado
+
+
+    for lancamento in lancamentos_paginados:
+        if lancamento['lancamento'].tipo == 'RECEITA' and lancamento['lancamento'].situacao == 'PAGO':
+            total_entradas += lancamento['lancamento'].valor_total
+        elif lancamento['lancamento'].tipo == 'DESPESA' and lancamento['lancamento'].situacao == 'PAGO':
+            total_saidas += lancamento['lancamento'].valor_total
+        if lancamento['lancamento'].situacao == 'PAGO':
+            saldo_pagina += lancamento['lancamento'].valor_total
+        
     get_copy = request.GET.copy()
     parameters = get_copy.pop('page', True) and get_copy.urlencode()
 
-    lancamentoForm = LancamentosOpForm(initial={'conta': conta_selecionada})
+    lancamentoForm = LancamentosOpForm(initial={'conta': conta_selecionada, 'situacao': situacao_selecionada})
 
     context = {
         'titulo': titulo,
         'is_lancamento': True,
         'lancamentos_com_saldos': lancamentos_paginados,
         'parameters': parameters,
-        'saldo_geral': saldo_geral,
+        'saldo_pagina': saldo_pagina,
         'saldo_anterior': saldo_anterior,
+        'total_entradas': total_entradas,
+        'total_saidas': total_saidas,
         'data_inicio': data_inicio.isoformat() if data_inicio else '',
         'data_fim': data_fim.isoformat() if data_fim else '',
         'hoje': hoje.isoformat(),

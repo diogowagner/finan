@@ -11,10 +11,18 @@
             <div class="col-lg-12 order-md-1">
                 <form method="GET" action=".">
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-2 mb-2">
                             <div class="text-left">
                                 <h5>{{ titulo }}</h5>
                             </div>
+                        </div>
+                        <div class="col-lg-2 mb-2">
+                            {% for radio in lancamentoForm.situacao %}
+                                <label for="{{ radio.id_for_label }}">
+                                    {{ radio.choice_label }}
+                                    <span class="radio">{{ radio.tag }}</span>
+                                </label>
+                            {% endfor %}
                         </div>
                         <div class="col-lg-3 mb-3">
                             {{ lancamentoForm.conta }}
@@ -93,7 +101,7 @@
                                     {% if item.lancamento.situacao == 'PAGO' %}
                                         <td class='text-center'>Pago</td>
                                     {% else %}
-                                        <td class='text-center'>A Pagar</td>
+                                        <td class='text-center'>À Pagar</td>
                                     {% endif %}
                                     
                                 </tr>
@@ -136,7 +144,9 @@
                 </nav>
                 <div>
                     <p class="font-weight-bold text-right">Saldo Anterior: R$ {{ saldo_anterior|currency }}</p>
-                    <p class="font-weight-bold text-right">Saldo Geral: R$ {{ saldo_geral|currency }}</p>
+                    <p class="font-weight-bold text-primary text-right">Entradas: R$ {{ total_entradas|currency }}</p>
+                    <p class="font-weight-bold text-danger text-right">Saídas: R$ {{ total_saidas|currency }}</p>
+                    <p class="font-weight-bold text-right">Saldo: R$ {{ saldo_pagina|currency }}</p>
                 </div>
             </div>
         </div>
