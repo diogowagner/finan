@@ -50,12 +50,18 @@
                 <a class="nav-link" href="{% url "fluxo:lancamentos" %}">Lançamentos</a>
                 </li>
             {% if is_relatorios %}
-                <li class="nav-item active">
+                <li class="nav-item dropdown active">
             {% else %}
-                <li class="nav-item">
+                <li class="nav-item dropdown">
             {% endif %}
-                <a class="nav-link" href="#">Relatórios</a>
-                </li>
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Relatórios
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="#">Fluxo de caixa</a>
+                  <a class="dropdown-item" href="#">Lançamentos</a>
+                </div>
+              </li>
         </ul>
         <form class="form-inline mt-2 mt-md-0">
             <div class="col-6 dropdown">
@@ -65,8 +71,8 @@
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     <a class="dropdown-item" href="{% url "fluxo:cadastro_categoria" %}">Categorias</a>
                     <a class="dropdown-item" href="{% url "fluxo:cadastro_conta" %}">Conta</a>
-                    <a class="dropdown-item" href="#">Fornecedor</a>
-                    <a class="dropdown-item" href="#">Cliente</a>
+                    <a class="dropdown-item" href="{% url "fluxo:cadastro_cliente_fornecedor" tipo='FORNECEDOR'%}">Fornecedor</a>
+                    <a class="dropdown-item" href="{% url "fluxo:cadastro_cliente_fornecedor" tipo='CLIENTE'%}">Cliente</a>
                     <a class="dropdown-item" href="#">Usuário</a>
                 </div>
             </div>

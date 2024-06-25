@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block conteudo %}
+
+<main role="main" class="flex-shrink-0">
+    <br>
+    <div class="container py-5">
+        <h3 class='text-center'>{{ titulo }}</h3>
+        <br>
+        <form method="post" novalidate>
+            {% csrf_token %}
+                <div class="col-md-12">  
+                    <div class="row">          
+                        {% for field in form  %}
+                            <div class="col-md-6">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <div class="alert alert-danger">
+                                    {{ field.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}                        
+                    </div>
+                    <div class='row'>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </div>
+        </form>
+    </div>
+
+{% endblock %}

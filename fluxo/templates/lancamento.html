@@ -86,7 +86,7 @@
                                     <td class='font-weight-bold'>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
                                     <td><span class="text-white" style="background-color:{{item.lancamento.itens.first.categoria.cor}};border: 1px solid {{item.lancamento.itens.first.categoria.cor}};">{{ item.lancamento.itens.first.categoria }}</span></td>
                                     <td>
-                                        <a class="text-info" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id %}">
+                                        <a class="text-info" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id ad='0' %}">
                                             {{ item.lancamento.itens.first.descricao }}
                                         </a>
                                     </td>

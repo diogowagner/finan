@@ -25,6 +25,7 @@ class LancamentosOpForm(BaseLancamentosForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['conta'].required = False  # Define o campo 'conta' como opcional
+        self.fields['situacao'].required = False  # Define o campo 'situacao' como opcional
 
 class LancamentosObForm(BaseLancamentosForm):
     class Meta(BaseLancamentosForm.Meta):
@@ -73,7 +74,7 @@ class ItemForm(ModelForm):
         # Ordenar as categorias por nome
         self.fields['categoria'].queryset = Categoria.objects.all().order_by('descricao')
 
-ItemFormSet = inlineformset_factory(Lancamento, Item, form=ItemForm, extra=1, can_delete=True)
+ItemFormSet = inlineformset_factory(Lancamento, Item, form=ItemForm, extra=1)
 
 
 
@@ -100,6 +101,9 @@ class AnexoForm(forms.ModelForm):
         widgets = {
             'arquivo': forms.ClearableFileInput(),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['arquivo'].required = False
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
@@ -155,4 +159,52 @@ class ContaForm(forms.ModelForm):
             'situacao_conta': forms.TextInput(attrs={'class':"form-control"}),
             'agrupamento': forms.TextInput(attrs={'class':"form-control"}),
             'permite_lancamentos': forms.CheckboxInput(),
+        }
+        
+class FornecedorClienteForm(forms.ModelForm):
+    class Meta:
+        model = FornecedorCliente
+        fields = (
+            'cpf_cnpj',
+            'nome_razao_social',
+            'nome_fantasia',
+            'ie',
+            'im',
+            'email',
+            'telefone',
+            'cep',
+            'endereco',
+            'numero',
+            'complemento',
+            'bairro',
+            'estado',
+            'cidade',
+            'banco',
+            'agencia',
+            'conta',
+            'observacao',
+            'tipo',
+ 
+        )
+
+        widgets = {
+            'cpf_cnpj': forms.TextInput(attrs={'class':"form-control"}),
+            'nome_razao_social': forms.TextInput(attrs={'class':"form-control"}),
+            'nome_fantasia': forms.TextInput(attrs={'class':"form-control"}),
+            'ie': forms.TextInput(attrs={'class':"form-control"}),
+            'im': forms.TextInput(attrs={'class':"form-control"}),
+            'email': forms.EmailInput(attrs={'class':"form-control"}),
+            'telefone': forms.TextInput(attrs={'class':"form-control"}),
+            'cep': forms.TextInput(attrs={'class':"form-control"}),
+            'endereco': forms.TextInput(attrs={'class':"form-control"}),
+            'numero': forms.TextInput(attrs={'class':"form-control"}),
+            'complemento': forms.TextInput(attrs={'class':"form-control"}),
+            'bairro': forms.TextInput(attrs={'class':"form-control"}),
+            'estado': forms.TextInput(attrs={'class':"form-control"}),
+            'cidade': forms.TextInput(attrs={'class':"form-control"}),
+            'banco': forms.TextInput(attrs={'class':"form-control"}),
+            'agencia': forms.TextInput(attrs={'class':"form-control"}),
+            'conta': forms.TextInput(attrs={'class':"form-control"}),
+            'observacao': forms.TextInput(attrs={'class':"form-control"}),
+            'tipo': forms.HiddenInput(),
         }

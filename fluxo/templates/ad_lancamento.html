@@ -5,10 +5,11 @@
 <!-- Começa o conteúdo da página -->
 
 <main role="main" class="flex-shrink-0">
-    <div class="container">
-        <div class="py-5 text-left">
+    <div class="container py-5">
+        <div class=" text-left">
             <h5 class="mt-4">{{titulo}}</h5>
         </div>
+        <br>
 <div class="row">
 
     {% include "partials/botoes_lancamento.html" %}
@@ -46,6 +47,76 @@
     </div>
 
     <hr class="mb-2">
+
+    <!-- Bloco FOR itens -->
+
+    {% if editar_lancamento %}
+
+    {% for item in itemForms %}
+    <div class="row">
+        <div class="col-md-9 mb-3">
+            {{ item.descricao }}
+            <div class="invalid-feedback">
+                Por favor, insira uma descrição.
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">{{ simbolo }}</span>
+                </div>
+                {{ item.valor }}
+                <div class="invalid-feedback">
+                    Por favor, insira um valor.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {{ item.categoria }}
+            <div class="invalid-feedback">
+                Por favor, escolha uma categoria válida.
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            {{ item.centro_custo_lucro }}
+            <div class="invalid-feedback">
+                Por favor, insira um valor válido.
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            {{ item.forma_pagamento }}
+            <div class="invalid-feedback">
+                Por favor, insira uma forma de pagamento válida.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{ item.fornecedor_cliente }}
+            <div class="invalid-feedback">
+                Por favor, insira um fornecedor válido.
+            </div>
+        </div>
+        {% if forloop.last and not adiciona_itens %}
+            <div class="col-md-2">
+                <button type="submit" name="salvar_itens" value="" class="btn btn-light btn-sm btn-block">+ itens</button>
+            </div>
+        {% endif %}
+    </div>
+
+        <hr class="mb-2">
+
+    <!-- Fim Bloco itens -->
+
+    {% endfor %}
+
+    <!-- Bloco adiciona itens -->
+
+    {% else %}
 
     <div class="row">
         <div class="col-md-9 mb-3">
@@ -95,14 +166,92 @@
                 Por favor, insira um fornecedor válido.
             </div>
         </div>
+        <div class="col-md-2">
+            <button type="submit" name="salvar_itens" value="" class="btn btn-light btn-sm btn-block">+ itens</button>
+        </div>
     </div>
 
-    <hr class="mb-1">
+    <hr class="mb-2">
+
+    {% endif %}
+
+    {% if adiciona_itens %}
 
     <div class="row">
+        <div class="col-md-9 mb-3">
+            {{ itemForm.descricao }}
+            <div class="invalid-feedback">
+                Por favor, insira uma descrição.
+            </div>
+        </div>
         <div class="col-md-3 mb-3">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">{{ simbolo }}</span>
+                </div>
+                {{ itemForm.valor }}
+                <div class="invalid-feedback">
+                    Por favor, insira um valor.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {{ itemForm.categoria }}
+            <div class="invalid-feedback">
+                Por favor, escolha uma categoria válida.
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            {{ itemForm.centro_custo_lucro }}
+            <div class="invalid-feedback">
+                Por favor, insira um valor válido.
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            {{ itemForm.forma_pagamento }}
+            <div class="invalid-feedback">
+                Por favor, insira uma forma de pagamento válida.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{ itemForm.fornecedor_cliente }}
+            <div class="invalid-feedback">
+                Por favor, insira um fornecedor válido.
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" name="salvar_itens" value="" class="btn btn-light btn-sm btn-block">+ itens</button>
+        </div>
+    </div>
+
+    <hr class="mb-2">
+
+
+    {% endif %}
+
+    {% if anexos %}
+    <div class="row">
+        <div class="col-md-12">
+        {% for anexo in anexo_nome %}
+            <div><a href="/media/anexos/{{ anexo.nome }}">{{anexo.nome}}</a></div>
+        {% endfor %}
+        </div>
+    </div>
+    <br>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6 mb-3">
             <label for="anexos">Anexo</label>
             {{ anexoForm.arquivo }}
+        </div>
+        <div class="col-md-2">
+            <button type="submit" name="salvar_anexo" value="" class="btn btn-light btn-sm btn-block">+ arquivos</button>
         </div>
     </div>
 
@@ -178,37 +327,39 @@
             }
         };
 
-        $('#id_categoria').select2({
-            language: select2Messages,
-            placeholder: select2Messages.placeholders.id_categoria
+        function initializeSelect2(selector, placeholder) {
+            $(selector).select2({
+                language: select2Messages,
+                placeholder: placeholder
+            });
+        }
+
+        $('[id^=id_categoria]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_categoria);
         });
 
-        $('#id_conta').select2({
-            language: select2Messages,
-            placeholder: select2Messages.placeholders.id_conta
+        $('[id^=id_conta]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_conta);
         });
 
-        $('#id_centro_custo_lucro').select2({
-            language: select2Messages,
-            placeholder: select2Messages.placeholders.id_centro_custo_lucro
+        $('[id^=id_centro_custo_lucro]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_centro_custo_lucro);
         });
 
-        $('#id_forma_pagamento').select2({
-            language: select2Messages,
-            placeholder: select2Messages.placeholders.id_forma_pagamento
+        $('[id^=id_forma_pagamento]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_forma_pagamento);
         });
 
-        $('#id_fornecedor_cliente').select2({
-            language: select2Messages,
-            placeholder: select2Messages.placeholders.id_fornecedor_cliente
+        $('[id^=id_fornecedor_cliente]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_fornecedor_cliente);
         });
 
-
-        $('#id_categoria, #id_conta, #id_centro_custo_lucro, #id_forma_pagamento, #id_fornecedor_cliente').on('input', function() {
+        $('[id^=id_categoria], [id^=id_conta], [id^=id_centro_custo_lucro], [id^=id_forma_pagamento], [id^=id_fornecedor_cliente]').on('input', function() {
             $(this).select2('open');
         });
     });
 </script>
+
 
 {% endblock scripts %}
 

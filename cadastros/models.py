@@ -6,8 +6,8 @@ class FornecedorCliente(models.Model):
         ('CLIENTE', 'Cliente'),
         ('FORNECEDOR', 'Fornecedor'),
     )
-    cpf_cnpj = models.CharField(max_length=20)
-    nome_razao_social = models.CharField(max_length=100)
+    cpf_cnpj = models.CharField(verbose_name='Cpf | Cnpj', max_length=20)
+    nome_razao_social = models.CharField(verbose_name='Nome | Razão social',max_length=100)
     nome_fantasia = models.CharField(max_length=100, blank=True, null=True)
     ie = models.CharField(max_length=20, blank=True, null=True)
     im = models.CharField(max_length=20, blank=True, null=True)
