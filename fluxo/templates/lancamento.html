@@ -81,13 +81,16 @@
                                 <td class="text-right">{{ saldo_anterior|currency }}</td>
                                 <td></td>
                             </tr>
-                            {% for item in lancamentos_com_saldos %}
+                            {% for item in lancamentos_paginados %}
                                 <tr>
                                     <td class='font-weight-bold'>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
                                     <td><span class="text-white" style="background-color:{{item.lancamento.itens.first.categoria.cor}};border: 1px solid {{item.lancamento.itens.first.categoria.cor}};">{{ item.lancamento.itens.first.categoria }}</span></td>
                                     <td>
                                         <a class="text-info" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id ad='0' %}">
                                             {{ item.lancamento.itens.first.descricao }}
+                                            {% if item.quantidade_itens > 1 %}
+                                            ({{ item.quantidade_itens}})
+                                            {% endif %}
                                         </a>
                                     </td>
                                     <td class="text-right text-success">{{ item.lancamento.valor_total|currency }}</td>
@@ -121,23 +124,23 @@
                 </div>
                 <nav aria-label="Page navigation" class="navigation">
                     <ul class="pagination pagination-sm">
-                        {% if lancamentos_com_saldos.has_previous %}
+                        {% if lancamentos_paginados.has_previous %}
                             <li class="page-item">
                                 <a href="?page=1&{{ parameters }}" class="page-link">&laquo; Primeiro</a>
                             </li>
                             <li class="page-item">
-                                <a href="?page={{ lancamentos_com_saldos.previous_page_number }}&{{ parameters }}" class="page-link">Anterior</a>
+                                <a href="?page={{ lancamentos_paginados.previous_page_number }}&{{ parameters }}" class="page-link">Anterior</a>
                             </li>
                         {% endif %}
                         <li class="page-item">
-                            <a href="#" class="page-link">Página {{ lancamentos_com_saldos.number }} de {{ lancamentos_com_saldos.paginator.num_pages }}</a>
+                            <a href="#" class="page-link">Página {{ lancamentos_paginados.number }} de {{ lancamentos_paginados.paginator.num_pages }}</a>
                         </li>
-                        {% if lancamentos_com_saldos.has_next %}
+                        {% if lancamentos_paginados.has_next %}
                             <li class="page-item">
-                                <a href="?page={{ lancamentos_com_saldos.next_page_number }}&{{ parameters }}" class="page-link">Próximo</a>
+                                <a href="?page={{ lancamentos_paginados.next_page_number }}&{{ parameters }}" class="page-link">Próximo</a>
                             </li>
                             <li class="page-item">
-                                <a href="?page={{ lancamentos_com_saldos.paginator.num_pages }}&{{ parameters }}" class="page-link">Último &raquo;</a>
+                                <a href="?page={{ lancamentos_paginados.paginator.num_pages }}&{{ parameters }}" class="page-link">Último &raquo;</a>
                             </li>
                         {% endif %}
                     </ul>

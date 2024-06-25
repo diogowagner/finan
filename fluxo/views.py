@@ -137,10 +137,11 @@ def lancamentos(request):
 
     # Calcular saldo anterior considerando todos os lançamentos antes da data_inicio
     saldo_anterior = 0
+
     if data_inicio:
         saldo_anterior = Item.objects.filter(
             lancamento__data_lancamento__lt=data_inicio
-        ).aggregate(Sum('valor'))['valor__sum']
+        ).filter(lancamento__situacao='PAGO').aggregate(Sum('valor'))['valor__sum']
         saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
 
     saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
@@ -153,15 +154,15 @@ def lancamentos(request):
     total_saidas = 0
 
     for lancamento in lancamentos_list:
-        itens_do_lancamento = lancamento.itens.all()
-        saldo_lancamento = sum(item.valor for item in itens_do_lancamento)
+        saldo_lancamento = lancamento.valor_total
+        quantidade_itens = (lancamento.itens.count())
         if lancamento.situacao == 'PAGO':
             saldo_acumulado += saldo_lancamento
         lancamentos_com_saldos.append({
             'lancamento': lancamento,
             'saldo': saldo_acumulado,
+            'quantidade_itens': quantidade_itens,
         })
-
     paginator = Paginator(lancamentos_com_saldos, 20)
     page_number = request.GET.get('page')
     lancamentos_paginados = paginator.get_page(page_number)
@@ -170,13 +171,14 @@ def lancamentos(request):
         saldo_pagina = 0
     elif lancamentos_paginados:
         saldo_paginado = lancamentos_paginados[0]['saldo']
-        valor_total_paginado = lancamentos_paginados[0]['lancamento'].valor_total
-
+        if lancamentos_paginados[0]['lancamento'].situacao == 'PAGO':
+            valor_total_paginado = lancamentos_paginados[0]['lancamento'].valor_total
+        else:
+            valor_total_paginado = 0
         saldo_anterior = saldo_paginado - valor_total_paginado
         saldo_pagina = saldo_anterior
     else:
         saldo_pagina = saldo_acumulado
-
 
     for lancamento in lancamentos_paginados:
         if lancamento['lancamento'].tipo == 'RECEITA' and lancamento['lancamento'].situacao == 'PAGO':
@@ -194,7 +196,7 @@ def lancamentos(request):
     context = {
         'titulo': titulo,
         'is_lancamento': True,
-        'lancamentos_com_saldos': lancamentos_paginados,
+        'lancamentos_paginados': lancamentos_paginados,
         'parameters': parameters,
         'saldo_pagina': saldo_pagina,
         'saldo_anterior': saldo_anterior,
@@ -208,9 +210,6 @@ def lancamentos(request):
 
     return render(request, 'lancamento.html', context)
 
-
-
-from django.forms.models import inlineformset_factory
 
 def adicionar_lancamento(request, tipo):
 
