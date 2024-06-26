@@ -9,6 +9,8 @@ from .views import(
                     cadastro_categoria,
                     cadastro_conta,
                     cadastro_cliente_fornecedor,
+                    login_view,
+                    logout_view,
                     )
 
 app_name = 'fluxo'
@@ -21,5 +23,7 @@ urlpatterns = [
     path('cadastro/<str:tipo>/', cadastro_cliente_fornecedor, name='cadastro_cliente_fornecedor'),
     path('filtros/', filtros, name='filtros'),
     path('lancamentos/', lancamentos, name='lancamentos'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
     path('', index, name='index'),
 ]

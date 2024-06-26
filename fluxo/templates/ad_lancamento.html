@@ -55,7 +55,7 @@
     {% for item in itemForms %}
     <div class="row">
         <div class="col-md-9 mb-3">
-            {{ item.descricao }}
+            {{ item.item.descricao }}
             <div class="invalid-feedback">
                 Por favor, insira uma descrição.
             </div>
@@ -65,7 +65,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">{{ simbolo }}</span>
                 </div>
-                {{ item.valor }}
+                {{ item.item.valor }}
                 <div class="invalid-feedback">
                     Por favor, insira um valor.
                 </div>
@@ -75,19 +75,19 @@
 
     <div class="row">
         <div class="col-md-6 mb-4">
-            {{ item.categoria }}
+            {{ item.item.categoria }}
             <div class="invalid-feedback">
                 Por favor, escolha uma categoria válida.
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            {{ item.centro_custo_lucro }}
+            {{ item.item.centro_custo_lucro }}
             <div class="invalid-feedback">
                 Por favor, insira um valor válido.
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            {{ item.forma_pagamento }}
+            {{ item.item.forma_pagamento }}
             <div class="invalid-feedback">
                 Por favor, insira uma forma de pagamento válida.
             </div>
@@ -96,11 +96,16 @@
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            {{ item.fornecedor_cliente }}
+            {{ item.item.fornecedor_cliente }}
             <div class="invalid-feedback">
                 Por favor, insira um fornecedor válido.
             </div>
         </div>
+        {% if quantidade_itens > 1 %}
+            <div class="col-md-2">
+                <button type="submit" name="remover_item" value="{{item.item_id}}" class="btn btn-light btn-sm btn-block" onclick="return confirm('Tem certeza que deseja apagar este item?');">- remover item</button>
+            </div>
+        {% endif %}
         {% if forloop.last and not adiciona_itens %}
             <div class="col-md-2">
                 <button type="submit" name="salvar_itens" value="" class="btn btn-light btn-sm btn-block">+ itens</button>
@@ -277,6 +282,9 @@
             <button type="submit" name="delete" value="delete" class="btn btn-danger btn-md btn-block" onclick="return confirm('Tem certeza que deseja apagar este lançamento?');">Apagar</button>
         </div>
         {% endif %}
+        <div class="col-md-2 mb-2">
+            <a class="btn btn-secondary btn-md btn-block" href="{% url "fluxo:lancamentos" %}">Voltar</a>
+        </div>
     </div>
     <br>
 </form>

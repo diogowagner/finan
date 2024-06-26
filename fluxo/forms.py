@@ -57,6 +57,7 @@ class ItemForm(ModelForm):
         model = Item
         fields = '__all__'
         widgets = {
+            'id': forms.HiddenInput(),
             'descricao': forms.TextInput(attrs={'class':"form-control", 'placeholder':"Descrição"}),
             'valor' : forms.TextInput(attrs={'class':"form-control valor", 'placeholder':"0,00"}),
             'categoria': forms.Select(attrs={'class':"form-control"}),
