@@ -31,11 +31,12 @@ def adicionar_lancamento(request, tipo):
             if parcelas > 1:
                 valor_parcelado = Decimal(valor) / parcelas
 
-        if valor_parcelado:
+        if valor_parcelado and not 'salvar_itens' in request.POST:
             data_lancamento = datetime.strptime(valores['data_lancamento'], '%Y-%m-%d').date()
             for i in range(parcelas):
                 lancamentoForm = LancamentosObForm(valores)
                 itemForm = ItemForm(valores)
+                anexoForm = AnexoForm(request.POST, request.FILES)
 
                 if lancamentoForm.is_valid():
                     lancamento = lancamentoForm.save(commit=False)
@@ -54,6 +55,12 @@ def adicionar_lancamento(request, tipo):
                         lancamento.valor_total = item.valor
                         item.save()
                         lancamento.save()
+                        
+                    if anexoForm.is_valid():
+                        arquivos = anexoForm.save(commit=False)
+                        arquivos.lancamento = lancamento
+                        arquivos.save()
+
         else:
             if lancamentoForm.is_valid():
                 lancamento = lancamentoForm.save()
@@ -66,14 +73,18 @@ def adicionar_lancamento(request, tipo):
                     item.save()
                     lancamento.save()
 
-        if anexoForm.is_valid():
-            arquivos = anexoForm.save(commit=False)
-            arquivos.lancamento = lancamento
-            arquivos.save()
+                if anexoForm.is_valid():
+                    arquivos = anexoForm.save(commit=False)
+                    arquivos.lancamento = lancamento
+                    arquivos.save()
+
         if 'salvar_anexo' in request.POST:
             return redirect(f'/editar/{tipo}/0/{lancamento.id}')
+        elif 'salvar_itens' in request.POST:
+                adiciona_itens = True
+                return redirect(f'/editar/{tipo}/1/{lancamento.id}')
         else:
-            return redirect('/lancamentos/')
+            return redirect('/lancamentos/todos/')
             
     else:
         lancamentoForm = LancamentosObForm()
@@ -90,6 +101,7 @@ def adicionar_lancamento(request, tipo):
         'lancamentoForm': lancamentoForm,
         'itemForm': itemForm,
         'anexoForm': anexoForm,
+        'adiciona_lancamento': True,
     }
 
     return render(request, 'ad_lancamento.html', context)

@@ -17,26 +17,14 @@ from datetime import datetime, date, timedelta
 
 from .. import forms, models
 
-def index(request):
-    if request.method == 'GET':
-        return redirect('/lancamentos/')
 
-    context = {
-        'is_inicio': True,
-    }
-
-    return render(
-        request,
-        'index.html',
-        context
-    )
 
 def cadastro_categoria(request):
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/lancamentos/')
+            return redirect('/lancamentos/todos/')
     else:
         form = CategoriaForm()
     
@@ -51,7 +39,7 @@ def cadastro_conta(request):
         form = ContaForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/lancamentos/')
+            return redirect('/lancamentos/todos/')
     else:
         form = ContaForm()
     
@@ -69,7 +57,7 @@ def cadastro_cliente_fornecedor(request, tipo):
         form = FornecedorClienteForm(valores)
         if form.is_valid():
             form.save()
-            return redirect('/lancamentos/')
+            return redirect('/lancamentos/todos/')
     else:
         form = FornecedorClienteForm()
     

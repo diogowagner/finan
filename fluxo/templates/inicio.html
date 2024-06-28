@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+
+{% block conteudo %}
+
+<br>
+<div class="container py-5">
+<div class="row">
+    <div class="col-sm-6 mb-2">
+      <div class="card">
+        <div class="card-header">Saldo Contas</div>
+        <div class="card-body">
+          <table class="table table-sm table-borderless">
+            <thead>
+              <tr>
+                <th class="text-dark" scope="col">Conta</th>
+                <th class="text-right text-dark" scope="col">Saldo</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for conta in lista_saldos %}
+              <tr>
+                <th class="text-info"scope="row">{{conta.apelido}}</th>
+                <td class="text-right text-info">{{conta.saldo|currency}}</td>
+                <td></td>
+                <td></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+            <a href="{% url "fluxo:lancamentos" filtro='todos' %}" class="btn btn-primary">Ir Lançamentos</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 mb-2">
+      <div class="card">
+        <div class="card-header">Contas a Pagar</div>
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Data</th>
+                  <th class="text-dark" scope="col">Descrição</th>
+                  <th class="text-right text-dark" scope="col">Valor</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for conta in apagar %}
+                <tr>
+                  <th class="text-info" scope="row">{{conta.data_lancamento|date:"d M"}}</th>
+                  <td class="text-info">{{conta.itens.first.descricao}}</td>
+                  <td class="text-right text-danger">{{conta.valor_total|currency}}</td>
+                  <td></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+              <a href="{% url "fluxo:lancamentos" filtro='apagar' %}"class="btn btn-primary">Contas a pagar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

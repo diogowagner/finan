@@ -9,7 +9,7 @@ class CategoriaAdmin(admin.ModelAdmin):
         form.base_fields['categoria_pai'].widget.can_change_related = False
         form.base_fields['categoria_pai'].widget.can_delete_related = False
         return form
-    list_display = ['descricao','categoria_pai','ativo']
+    list_display = ['id','descricao','categoria_pai','ativo']
     list_filter = ['ativo', 'is_categoria_filha', 'classificacao']
     # list_editable = ['is_categoria_filha']
     exclude = ['slug']

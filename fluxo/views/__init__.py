@@ -4,3 +4,5 @@ from .lancamentos import *
 from .adicionar_lancamento import *
 from .editar_lancamento import *
 from .logout import *
+from .inicio import *
+from .transferir import *

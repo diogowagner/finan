@@ -1,5 +1,5 @@
 from django.db import models
-from finan.models import Conta, Categoria
+from finan.models import Conta, Categoria, FormaPagamento, CentroCusto
 from cadastros.models import FornecedorCliente
 from django.utils import timezone
 import os
@@ -65,14 +65,26 @@ class Item(models.Model):
         blank=False, null=False,
         verbose_name="Categoria",
     )
-    centro_custo_lucro = models.CharField(max_length=100, blank=True, null=True)
+    centro_custo_lucro = models.ForeignKey(
+        CentroCusto,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name="Centro custo/lucro"
+    )
     fornecedor_cliente = models.ForeignKey(
         FornecedorCliente,
         on_delete=models.CASCADE,
         blank=True, null=True,
+        related_name='fornecedor_cliente',
         verbose_name="Fornecedor/Cliente"
     )
-    forma_pagamento = models.CharField(max_length=100, blank=True, null=True)
+    forma_pagamento = models.ForeignKey(
+        FormaPagamento,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        related_name='forma_pagamento',
+        verbose_name="Lançamento",
+        )
     tag = models.CharField(max_length=100, blank=True, null=True)
     tipo_custo = models.CharField(max_length=100, blank=True, null=True)
     apropriacao_custo = models.CharField(max_length=100, blank=True, null=True)
@@ -85,3 +97,21 @@ class Item(models.Model):
 
     def __str__(self):
         return f'{self.descricao} - {self.valor}'
+
+class Transferencia(models.Model):
+    data_transferencia = models.DateField(verbose_name="Data da Transferência")
+    conta_origem = models.ForeignKey(
+        Conta,
+        on_delete=models.CASCADE,
+        related_name='conta_origem',
+        verbose_name="Conta origem",
+    )
+    conta_destino = models.ForeignKey(
+        Conta,
+        on_delete=models.CASCADE,
+        related_name='conta_destino',
+        verbose_name="Conta destino",
+    )
+    descricao = models.CharField(max_length=200)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    observacoes = models.TextField(blank=True, null=True, verbose_name="Observações")

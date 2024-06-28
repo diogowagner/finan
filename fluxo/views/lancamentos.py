@@ -13,27 +13,27 @@ from .. import forms, models
 
 
 @login_required
-def lancamentos(request):
+def lancamentos(request, filtro):
     titulo = 'Lançamentos'
 
     situacao_selecionada = request.GET.get('situacao')
-    filtro = request.GET.get('filtro')
+    filtro_data = request.GET.get('filtro_data')
     data_inicio = request.GET.get('data_inicio')
     data_fim = request.GET.get('data_fim')
     conta_selecionada = request.GET.get('conta')
 
     hoje = date.today()
     
-    if filtro == 'hoje':
+    if filtro_data == 'hoje':
         data_inicio = hoje
         data_fim = hoje
-    elif filtro == 'semana':
+    elif filtro_data == 'semana':
         data_inicio = hoje - timedelta(days=7)
         data_fim = hoje
-    elif filtro == 'mes':
+    elif filtro_data == 'mes':
         data_inicio = hoje - timedelta(days=30)
         data_fim = hoje
-    elif filtro == 'ano':
+    elif filtro_data == 'ano':
         data_inicio = hoje - timedelta(days=365)
         data_fim = hoje
     else:
@@ -52,6 +52,13 @@ def lancamentos(request):
     lancamentos_list = Lancamento.objects.filter(
         data_lancamento__range=(data_inicio, data_fim)
     ).order_by("data_lancamento", "pk").prefetch_related('itens')
+
+
+    if filtro == 'apagar' or filtro == 'pago':
+        lancamentos_list = lancamentos_list.filter(situacao=filtro.upper())
+        apagar = True
+    else:
+        apagar = False
 
     if conta_selecionada:
         lancamentos_list = lancamentos_list.filter(conta_id=conta_selecionada)
@@ -130,6 +137,7 @@ def lancamentos(request):
         'data_fim': data_fim.isoformat() if data_fim else '',
         'hoje': hoje.isoformat(),
         'lancamentoForm': lancamentoForm,
+        'apagar':apagar,
     }
 
     return render(request, 'lancamento.html', context)

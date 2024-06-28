@@ -13,13 +13,13 @@ def editar_lancamento(request, tipo, ad, id):
     try:
         lancamento = Lancamento.objects.get(id=id, tipo=tipo.upper())
     except Lancamento.DoesNotExist:
-        return redirect('/lancamentos/')
+        return redirect('/lancamentos/todos/')
 
     if request.method == 'POST':
         # print(request.POST)
         if 'delete' in request.POST:
             lancamento.delete()
-            return redirect('/lancamentos/')
+            return redirect('/lancamentos/todos/')
 
         elif 'remover_item' in request.POST:
             id_item = request.POST['remover_item']
@@ -126,7 +126,7 @@ def editar_lancamento(request, tipo, ad, id):
                 adiciona_itens = True
                 return redirect(f'/editar/{tipo}/1/{lancamento.id}')
             else:
-                return redirect('/lancamentos/')
+                return redirect('/lancamentos/todos/')
 
     else:
         if ad:

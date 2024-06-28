@@ -1,3 +1,11 @@
+"""
+Instruções de uso:
+
+In [1]: from utils.importar_categorias import importar_categorias
+In [2]: importar_categorias('utils/backup_categorias.csv')
+
+"""
+
 import csv
 from django.db import transaction
 from finan.models import Categoria

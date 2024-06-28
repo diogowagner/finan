@@ -1,6 +1,6 @@
 from django.forms import ModelForm, inlineformset_factory
 from django import forms
-from .models import Lancamento, Anexo, Item, Categoria, FornecedorCliente, Conta
+from .models import Lancamento, Anexo, Item, Categoria, FornecedorCliente, Conta, Transferencia
 
 
 class BaseLancamentosForm(ModelForm):
@@ -51,20 +51,19 @@ class LancamentosObForm(BaseLancamentosForm):
             'situacao': forms.RadioSelect(attrs={'class': "form-check"}),
         }
 
-
 class ItemForm(ModelForm):
     class Meta:
         model = Item
         fields = '__all__'
         widgets = {
             'id': forms.HiddenInput(),
-            'descricao': forms.TextInput(attrs={'class':"form-control", 'placeholder':"Descrição"}),
-            'valor' : forms.TextInput(attrs={'class':"form-control valor", 'placeholder':"0,00"}),
-            'categoria': forms.Select(attrs={'class':"form-control"}),
-            'centro_custo_lucro': forms.Select(attrs={'class':"form-control"}),
-            'fornecedor_cliente': forms.Select(attrs={'class':"form-control"}),
-            'forma_pagamento': forms.Select(attrs={'class':"form-control"}),
-            'tag': forms.TextInput(attrs={'class':"form-control"}),
+            'descricao': forms.TextInput(attrs={'class': "form-control", 'placeholder': "Descrição"}),
+            'valor': forms.TextInput(attrs={'class': "form-control valor", 'placeholder': "0,00"}),
+            'categoria': forms.Select(attrs={'class': "form-control", 'placeholder': "Selecione uma categoria"}),
+            'centro_custo_lucro': forms.Select(attrs={'class': "form-control", 'placeholder': "Selecione um centro de custo/lucro"}),
+            'fornecedor_cliente': forms.Select(attrs={'class': "form-control", 'placeholder': "Selecione um fornecedor/cliente"}),
+            'forma_pagamento': forms.Select(attrs={'class': "form-control", 'placeholder': "Selecione uma forma de pagamento"}),
+            'tag': forms.TextInput(attrs={'class': "form-control"}),
             'tipo_custo': forms.CheckboxInput(),
             'apropriacao_custo': forms.TextInput(attrs={'class': "form-control"}),
             'lancamento': forms.HiddenInput(),
@@ -74,9 +73,10 @@ class ItemForm(ModelForm):
         super(ItemForm, self).__init__(*args, **kwargs)
         # Ordenar as categorias por nome
         self.fields['categoria'].queryset = Categoria.objects.all().order_by('descricao')
-
-ItemFormSet = inlineformset_factory(Lancamento, Item, form=ItemForm, extra=1)
-
+        self.fields['categoria'].empty_label = "Selecione uma categoria"
+        self.fields['centro_custo_lucro'].empty_label = "Centro de custo/lucro"
+        self.fields['fornecedor_cliente'].empty_label = "Selecione um fornecedor/cliente"
+        self.fields['forma_pagamento'].empty_label = "Forma de pagamento"
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -138,6 +138,7 @@ class ContaForm(forms.ModelForm):
             'apelido_conta',
             'data_inicio',
             'saldo_conta',
+            'saldo_inicial',
             'tipo_chave_pix',
             'chave_pix',
             'situacao_conta',
@@ -155,6 +156,7 @@ class ContaForm(forms.ModelForm):
             'apelido_conta': forms.TextInput(attrs={'class':"form-control"}),
             'data_inicio': forms.TextInput(attrs={'class':"form-control"}),
             'saldo_conta': forms.TextInput(attrs={'class':"form-control"}),
+            'saldo_inicial': forms.TextInput(attrs={'class':"form-control"}),
             'tipo_chave_pix': forms.Select(attrs={'class':"form-control"}),
             'chave_pix': forms.TextInput(attrs={'class':"form-control"}),
             'situacao_conta': forms.TextInput(attrs={'class':"form-control"}),
@@ -209,3 +211,22 @@ class FornecedorClienteForm(forms.ModelForm):
             'observacao': forms.TextInput(attrs={'class':"form-control"}),
             'tipo': forms.HiddenInput(),
         }
+
+
+class TransferenciaForm(forms.ModelForm):
+    class Meta:
+        model = Transferencia
+        fields = '__all__'
+        widgets = {
+            'id': forms.HiddenInput(),
+            'data_transferencia': forms.DateInput(attrs={'class': "form-control", 'type': "date"}, format='%Y-%m-%d'),
+            'conta_origem': forms.Select(attrs={'class': 'form-control', 'data-placeholder':'Conta'}),
+            'conta_destino': forms.Select(attrs={'class': 'form-control', 'data-placeholder':'Conta'}),
+            'descricao': forms.TextInput(attrs={'class': "form-control", 'placeholder': "Descrição"}),
+            'valor': forms.TextInput(attrs={'class': "form-control valor", 'placeholder': "0,00"}),
+            'observacoes': forms.Textarea(attrs={'rows': 3, 'class': "form-control"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['descricao'].initial = "Transferência entre contas"

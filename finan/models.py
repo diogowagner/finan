@@ -97,6 +97,7 @@ class Conta(models.Model):
     telefone = models.CharField(max_length=15)
     apelido_conta = models.CharField(max_length=150)
     data_inicio = models.DateField()
+    saldo_inicial = models.DecimalField(max_digits=15, decimal_places=2)
     saldo_conta = models.DecimalField(max_digits=15, decimal_places=2)  # Ajustado max_digits
     tipo_chave_pix = models.CharField(max_length=20, choices=TIPO_CHAVE_PIX_CHOICES)  # Corrigido para usar choices
     chave_pix = models.CharField(max_length=100)
