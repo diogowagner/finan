@@ -12,6 +12,7 @@ from .views import(
                     login_view,
                     logout_view,
                     transferir,
+                    relatorio_fluxo,
                     )
 
 app_name = 'fluxo'
@@ -24,6 +25,7 @@ urlpatterns = [
     path('cadastro/conta/', cadastro_conta, name='cadastro_conta'),
     path('cadastro/<str:tipo>/', cadastro_cliente_fornecedor, name='cadastro_cliente_fornecedor'),
     path('filtros/', filtros, name='filtros'),
+    path('relatorios/fluxo/', relatorio_fluxo, name='relatorio_fluxo'),
     path('lancamentos/<str:filtro>/', lancamentos, name='lancamentos'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),

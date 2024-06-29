@@ -6,3 +6,4 @@ from .editar_lancamento import *
 from .logout import *
 from .inicio import *
 from .transferir import *
+from .relatorios import *

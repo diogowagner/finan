@@ -83,7 +83,7 @@ class Item(models.Model):
         on_delete=models.CASCADE,
         blank=True, null=True,
         related_name='forma_pagamento',
-        verbose_name="Lançamento",
+        verbose_name="Forma de pagamento",
         )
     tag = models.CharField(max_length=100, blank=True, null=True)
     tipo_custo = models.CharField(max_length=100, blank=True, null=True)
@@ -103,13 +103,13 @@ class Transferencia(models.Model):
     conta_origem = models.ForeignKey(
         Conta,
         on_delete=models.CASCADE,
-        related_name='conta_origem',
+        related_name='transferencias_origem',
         verbose_name="Conta origem",
     )
     conta_destino = models.ForeignKey(
         Conta,
         on_delete=models.CASCADE,
-        related_name='conta_destino',
+        related_name='transferencias_destino',
         verbose_name="Conta destino",
     )
     descricao = models.CharField(max_length=200)
