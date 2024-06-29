@@ -1,4 +1,6 @@
-static/
+fluxo/static/
+finan/static/
+cadastros/static/
 media/
 project/local_settings.py
 gunicorn-error-log
