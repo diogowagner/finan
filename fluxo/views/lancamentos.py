@@ -53,16 +53,6 @@ def lancamentos(request, filtro):
         data_lancamento__range=(data_inicio, data_fim)
     ).order_by("data_lancamento", "pk").prefetch_related('itens')
 
-    if data_inicio:
-        saldo_anterior = Item.objects.filter(
-            lancamento__data_lancamento__lt=data_inicio
-        ).filter(lancamento__situacao='PAGO').aggregate(Sum('valor'))['valor__sum']
-        saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
-
-    saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
-    saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
-
-
     if filtro == 'apagar' or filtro == 'pago':
         lancamentos_list = lancamentos_list.filter(situacao=filtro.upper())
         apagar = True
@@ -77,6 +67,15 @@ def lancamentos(request, filtro):
 
     # Calcular saldo anterior considerando todos os lançamentos antes da data_inicio
     saldo_anterior = 0
+
+    if data_inicio:
+        saldo_anterior = Item.objects.filter(
+            lancamento__data_lancamento__lt=data_inicio
+        ).filter(lancamento__situacao='PAGO').aggregate(Sum('valor'))['valor__sum']
+        saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
+
+    saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
+    saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
 
     # Calcular saldo acumulado para cada lançamento
     lancamentos_com_saldos = []
