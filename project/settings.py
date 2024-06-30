@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 ]
 
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / 'backups'}
+DBBACKUP_STORAGE_OPTIONS = {'location': '/home/ubuntu/OneDrive/backups'}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
