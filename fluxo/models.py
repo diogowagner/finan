@@ -16,7 +16,7 @@ class Lancamento(models.Model):
     APAGAR = 'APAGAR'
     PAGO_APAGAR_CHOICES = [
         (PAGO, 'Pago'),
-        (APAGAR, 'À Pagar'),
+        (APAGAR, 'a Pagar'),
     ]
 
     conta = models.ForeignKey(
