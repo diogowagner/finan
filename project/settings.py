@@ -43,7 +43,11 @@ INSTALLED_APPS = [
     'cadastros',
     'fluxo',
     'colorfield',
+    'dbbackup',
 ]
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / 'backups'}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

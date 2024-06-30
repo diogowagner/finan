@@ -5,6 +5,7 @@ gunicorn-error-log
 __localcode
 /data/
 migrations/
+backups/
 
 # Django #
 *.log
