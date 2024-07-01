@@ -67,14 +67,24 @@ def lancamentos(request, filtro):
 
     # Calcular saldo anterior considerando todos os lançamentos antes da data_inicio
     saldo_anterior = 0
-
+    
     if data_inicio:
-        saldo_anterior = Item.objects.filter(
-            lancamento__data_lancamento__lt=data_inicio
-        ).filter(lancamento__situacao='PAGO').aggregate(Sum('valor'))['valor__sum']
-        saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
-
-    saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
+        if conta_selecionada:
+            saldo_anterior = Item.objects.filter(
+                lancamento__data_lancamento__lt=data_inicio
+            ).filter(lancamento__situacao='PAGO').filter(
+                lancamento__conta_id=conta_selecionada).aggregate(Sum('valor'))['valor__sum']
+            saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
+        else:
+            saldo_anterior = Item.objects.filter(
+                lancamento__data_lancamento__lt=data_inicio
+            ).filter(lancamento__situacao='PAGO').aggregate(Sum('valor'))['valor__sum']
+            saldo_anterior = saldo_anterior if saldo_anterior is not None else 0
+    
+    if conta_selecionada:
+        saldo_geral = Item.objects.all().filter(lancamento__conta_id=conta_selecionada).aggregate(Sum('valor'))['valor__sum']
+    else:
+        saldo_geral = Item.objects.all().aggregate(Sum('valor'))['valor__sum']
     saldo_geral = f'{saldo_geral:.2f}' if saldo_geral is not None else '0.00'
 
     # Calcular saldo acumulado para cada lançamento
