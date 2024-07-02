@@ -18,10 +18,27 @@ def lancamentos(request, filtro):
 
     situacao_selecionada = request.GET.get('situacao')
     filtro_data = request.GET.get('filtro_data')
-    data_inicio = request.GET.get('data_inicio')
-    data_fim = request.GET.get('data_fim')
-    conta_selecionada = request.GET.get('conta')
 
+    # Recuperar ou definir datas da sessão
+    data_inicio = request.session.get('data_inicio', None)
+    data_fim = request.session.get('data_fim', None)
+
+    # Se estiverem presentes no GET, atualizar os valores e a sessão
+    if 'data_inicio' in request.GET and 'data_fim' in request.GET:
+        data_inicio = request.GET.get('data_inicio')
+        data_fim = request.GET.get('data_fim')
+        request.session['data_inicio'] = data_inicio
+        request.session['data_fim'] = data_fim
+
+
+    conta_selecionada = request.session.get('conta_selecionada', None)
+
+    # Se estiver presente no GET, atualizar o valor e a sessão
+    if 'conta' in request.GET:
+        conta_selecionada = request.GET.get('conta')
+        request.session['conta_selecionada'] = conta_selecionada
+    
+    # print(data_inicio)
     hoje = date.today()
     
     if filtro_data == 'hoje':
@@ -36,17 +53,24 @@ def lancamentos(request, filtro):
     elif filtro_data == 'ano':
         data_inicio = hoje - timedelta(days=365)
         data_fim = hoje
-    else:
-        if data_inicio and data_fim:
-            try:
-                data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d').date()
-                data_fim = datetime.strptime(data_fim, '%Y-%m-%d').date()
-            except ValueError:
-                data_inicio = hoje - timedelta(days=7)
-                data_fim = hoje
-        else:
-            data_inicio = hoje - timedelta(days=7)
-            data_fim = hoje
+
+    # Converter strings para objetos de data, se necessário
+    if isinstance(data_inicio, str):
+        try:
+            data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d').date()
+        except ValueError:
+            data_inicio = None
+
+    if isinstance(data_fim, str):
+        try:
+            data_fim = datetime.strptime(data_fim, '%Y-%m-%d').date()
+        except ValueError:
+            data_fim = None
+
+    if not data_inicio or not data_fim:
+        data_inicio = hoje - timedelta(days=7)
+        data_fim = hoje
+
 
     # Filtrar os lançamentos com base nos filtros aplicados
     lancamentos_list = Lancamento.objects.filter(
