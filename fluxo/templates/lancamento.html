@@ -108,7 +108,7 @@
                                             {% endif %}
                                         </a>
                                     </td>
-                                    <td class="text-right text-success">{{ item.lancamento.valor_total|currency }}</td>
+                                    <td class="text-right {% if item.lancamento.valor_total >= 0 %}text-primary {% else %} text-danger {% endif %}">{{ item.lancamento.valor_total|currency }}</td>
 
                                     {% if item.lancamento.situacao == 'PAGO' %}
                                         <td class="text-right">{{ item.saldo|currency }}</td>
