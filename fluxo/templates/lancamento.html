@@ -171,8 +171,8 @@
                             <div><span class="font-weight-bold">Saldo: R$ {{ saldo_pagina|currency }}</span></div>
                         </div>
                         {% else %}
-                            <div class="col-9"></div>
-                            <div class='col-3'>
+                            <div class="col-5 col-md-9"></div>
+                            <div class='col-7 col-md-3'>
                                 <a href="{% url "fluxo:lancamentos" filtro='todos' %}" class="btn btn-secondary btn btn-block">Todos Lancamentos</a>
                             </div>
                         {% endif %}
