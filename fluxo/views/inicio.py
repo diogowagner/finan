@@ -7,7 +7,7 @@ from django.db.models import Sum
 @login_required
 def inicio(request):
 
-    apagar = Lancamento.objects.all().filter(situacao='APAGAR')[:10]
+    apagar = Lancamento.objects.all().filter(situacao='APAGAR').order_by('data_lancamento')
 
     lista_saldos =[]
     for i in Conta.objects.all():
