@@ -12,7 +12,7 @@ def inicio(request):
     lista_saldos =[]
     for i in Conta.objects.all():
         saldo = Lancamento.objects.all().filter(
-                            conta_id=i.id).aggregate(Sum('valor_total'))['valor_total__sum']
+                            conta_id=i.id, situacao='PAGO').aggregate(Sum('valor_total'))['valor_total__sum']
         if saldo is None:
             saldo = 0
         conta_saldo = {
