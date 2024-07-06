@@ -6,7 +6,7 @@ from collections import defaultdict
 
 
 def relatorio_fluxo(request):
-    itens = Item.objects.select_related('categoria', 'lancamento').all()
+    itens = Item.objects.select_related('categoria', 'lancamento').all().filter(lancamento__situacao='PAGO')
     categorias = Categoria.objects.all().filter(ativo=True)
     
     relatorio = []
