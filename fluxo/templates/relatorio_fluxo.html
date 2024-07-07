@@ -32,9 +32,9 @@
             <tr>
                 <td>{{ item.descricao }}</td>
                 {% for valor in item.valor_mes %}
-                    <td>{{valor|currency}}</td>
+                    <td class='text-right'>{{valor|currency}}</td>
                 {% endfor %}
-                <td>{{ item.valor_total }}</td>
+                <td class='text-right'>{{ item.valor_total }}</td>
             </tr>
             {% endfor %}
         </tbody>
