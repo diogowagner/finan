@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+
+<br>
+
+<div class="container py-5">
+  <h3 class='text-center'>Cadastro de usuário</h3>
+
+  {% if messages %}
+    <div class="main-content center container messages-container">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+  {% endif %}
+
+<div class="row justify-content-md-center">
+    <form class="form-signin" action="{% url 'cadastro:cria_usuario' %}" method="POST">
+        {% csrf_token %}
+        <div class="col-12">
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{field}}
+  
+              {% if field.help_text %}
+                <p class="help-text">{{ field.help_text }}</p>
+              {% endif %}
+  
+              {{ field.errors }}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Enviar</button>
+        </div>
+
+    </form>
+</div>
+</div>
+
+{% endblock conteudo %}

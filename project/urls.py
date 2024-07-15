@@ -24,6 +24,7 @@ from fluxo import views
 urlpatterns = [
     path('select2/', include('django_select2.urls')),
     path('admin/', admin.site.urls),
+    path('cadastro/', include('cadastros.urls')),
     path('', include('fluxo.urls')),
 ]
 
