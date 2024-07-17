@@ -4,7 +4,7 @@ from fluxo.models import Item, Lancamento
 from finan.models import Categoria
 from datetime import datetime, date, timedelta
 from fluxo.forms import (
-                    ItemForm, 
+                    ItemFormOp, 
                     )
 from django.contrib.auth.decorators import login_required
 
@@ -118,7 +118,7 @@ def relatorio_lancamentos(request):
         lancamentos_list = lancamentos_list.filter(categoria_id=categoria_selecionada)
 
 
-    itemForm = ItemForm(initial={'categoria': categoria_selecionada})
+    itemForm = ItemFormOp()
     print(data_inicio)
     print(data_fim)
 

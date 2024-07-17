@@ -51,7 +51,7 @@ class LancamentosObForm(BaseLancamentosForm):
             'situacao': forms.RadioSelect(attrs={'class': "form-check"}),
         }
 
-class ItemForm(ModelForm):
+class BaseItemForm(ModelForm):
     class Meta:
         model = Item
         fields = '__all__'
@@ -69,14 +69,27 @@ class ItemForm(ModelForm):
             'lancamento': forms.HiddenInput(),
         }
 
+class ItemForm(ModelForm):
+    class Meta(BaseItemForm.Meta):
+        pass
+
     def __init__(self, *args, **kwargs):
-        super(ItemForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Ordenar as categorias por nome
         self.fields['categoria'].queryset = Categoria.objects.all().order_by('descricao')
         self.fields['categoria'].empty_label = "Selecione uma categoria"
         self.fields['centro_custo_lucro'].empty_label = "Centro de custo/lucro"
         self.fields['fornecedor_cliente'].empty_label = "Selecione um fornecedor/cliente"
         self.fields['forma_pagamento'].empty_label = "Forma de pagamento"
+
+
+class ItemFormOp(BaseItemForm):
+    class Meta(BaseItemForm.Meta):
+        pass
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['categoria'].required = False  # Define o campo 'conta' como opcional
 
 
 class MultipleFileInput(forms.ClearableFileInput):
