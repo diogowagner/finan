@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+
+{% block conteudo %}
+
+<br>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12 order-md-1">
+            <form method="GET" action=".">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-6 col-md-6 mb-2">
+                                <div class="text-left">
+                                    <h5>
+                                        {% if not apagar  %}{{ titulo }}{% else %} a pagar{% endif %}
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-6 mb-2 text-center">
+                                {% if not apagar %}
+                                    {% for radio in lancamentoForm.situacao %}
+                                        <label for="{{ radio.id_for_label }}">
+                                            {{ radio.choice_label }}
+                                            <span class="radio">{{ radio.tag }}</span>
+                                        </label>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                {{ lancamentoForm.conta }}
+                                <div class="invalid-feedback">
+                                    Por favor, escolha uma conta.
+                                </div>
+                            </div>
+                            <div class="col-md-8 mb-3 text-center">
+                                <a href="?filtro_data=hoje">Hoje</a> |
+                                <a href="?filtro_data=semana">7 dias</a> |
+                                <a href="?filtro_data=mes">30 dias</a> |
+                                <a href="?filtro_data=ano">Último ano</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="row justify-content-start">
+                            {{ itemForm.categoria }}
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row justify-content-end">
+                            <div class="col-10 col-md-5 mb-2">
+                                <input type="date" name="data_inicio" class="form-control" id="id_data_inicio" value="{{ data_inicio }}" placeholder="Data Início">
+                            </div>
+                            <div class="col-10 col-md-5 mb-2">
+                                <input type="date" name="data_fim" class="form-control" id="id_data_fim" value="{{ data_fim }}" placeholder="Data Fim">
+                            </div>
+                            <div class="col-10 col-md-2 mb-2">
+                                <button type="submit" class="btn btn-secondary btn btn-block">Filtrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <thead>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Categoria</th>
+                        <th>Descrição</th>
+                        <th class="text-right">Valor</th>
+                    </tr>
+                </thead>
+            </thead>
+            <tbody>
+                {% for item in lancamentos_list %}
+                    <tr>
+                        <td class='font-weight-bold'>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
+                        <td><span class="text-black" ">{{ item.lancamento.itens.first.categoria }}</span></td>
+                        <td>
+                            <a class="text-black">
+                                {{ item.descricao }}
+                            </a>
+                        </td>
+                        <td class="text-right {% if item.lancamento.valor_total >= 0 %}text-primary {% else %} text-danger {% endif %}">{{ item.lancamento.valor_total|currency }}</td>
+
+                        
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock conteudo %}
+
+
+{% block scripts %}
+
+<script>
+    $(document).ready(function() {
+        var select2Messages = {
+            noResults: function() {
+                return "Nenhum resultado encontrado";
+            },
+            placeholders: {
+                id_categoria: "Selecione uma categoria",
+                id_conta: "Conta",
+                id_centro_custo_lucro: "Centro de custo/lucro",
+                id_forma_pagamento: "Forma de pagamento",
+                id_fornecedor_cliente: "Selecione um fornecedor/cliente"
+            }
+        };
+
+        function initializeSelect2(selector, placeholder) {
+            $(selector).select2({
+                language: select2Messages,
+                placeholder: placeholder
+            });
+        }
+
+        $('[id^=id_categoria]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_categoria);
+        });
+
+        $('[id^=id_conta]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_conta);
+        });
+
+        $('[id^=id_centro_custo_lucro]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_centro_custo_lucro);
+        });
+
+        $('[id^=id_forma_pagamento]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_forma_pagamento);
+        });
+
+        $('[id^=id_fornecedor_cliente]').each(function() {
+            initializeSelect2(this, select2Messages.placeholders.id_fornecedor_cliente);
+        });
+
+        $('[id^=id_categoria], [id^=id_conta], [id^=id_centro_custo_lucro], [id^=id_forma_pagamento], [id^=id_fornecedor_cliente]').on('input', function() {
+            $(this).select2('open');
+        });
+    });
+</script>
+
+
+{% endblock scripts %}
