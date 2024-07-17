@@ -89,7 +89,7 @@ class ItemFormOp(BaseItemForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['categoria'].required = False  # Define o campo 'conta' como opcional
+        self.fields['categoria'].required = False  # Define o campo 'categoria' como opcional
 
 
 class MultipleFileInput(forms.ClearableFileInput):

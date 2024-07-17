@@ -124,7 +124,7 @@ def relatorio_lancamentos(request):
 
     context = {
         'relatorio': relatorio,
-        'titulo': 'Relatórios',
+        'titulo': 'Relatório Lancamentos',
         'itemForm': itemForm,
         'lancamentos_list': lancamentos_list,
         'data_inicio': data_inicio.isoformat() if data_inicio else '',
