@@ -156,6 +156,7 @@ def lancamentos(request, filtro):
     parameters = get_copy.pop('page', True) and get_copy.urlencode()
 
     lancamentoForm = LancamentosOpForm(initial={'conta': conta_selecionada, 'situacao': situacao_selecionada})
+    print(situacao_selecionada == 'APAGAR')
 
     context = {
         'titulo': titulo,
@@ -171,6 +172,7 @@ def lancamentos(request, filtro):
         'hoje': hoje.isoformat(),
         'lancamentoForm': lancamentoForm,
         'apagar':apagar,
+        'sit_todos': '' if situacao_selecionada == 'APAGAR' or situacao_selecionada == 'PAGO' else 'checked',
     }
 
     return render(request, 'lancamento.html', context)
