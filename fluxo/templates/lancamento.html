@@ -113,7 +113,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {% if item.lancamento.anexos.first %}
+                                        {% if item.lancamento.anexos.first.arquivo %}
                                         <img src="{% static 'fluxo/icones/anexo.png' %}" alt="">
                                         {% endif %}
                                     </td>
