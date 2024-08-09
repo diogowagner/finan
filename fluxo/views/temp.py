@@ -14,11 +14,13 @@ from django.http import QueryDict
 from django.forms import modelformset_factory
 from django.db.models import Sum
 from datetime import datetime, date, timedelta
+from django.contrib.auth.decorators import login_required
+
 
 from .. import forms, models
 
 
-
+@login_required
 def cadastro_categoria(request):
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
@@ -34,6 +36,7 @@ def cadastro_categoria(request):
     }
     return render(request, 'cad_categoria.html', context)
 
+@login_required
 def cadastro_conta(request):
     if request.method == 'POST':
         form = ContaForm(request.POST)
@@ -49,6 +52,7 @@ def cadastro_conta(request):
     }
     return render(request, 'cad_conta.html', context)
 
+@login_required
 def cadastro_cliente_fornecedor(request, tipo):
     if request.method == 'POST':
         valores = request.POST.copy()
@@ -68,6 +72,7 @@ def cadastro_cliente_fornecedor(request, tipo):
     }
     return render(request, 'cad_cliente_fornecedor.html', context)
 
+@login_required
 def filtros(request):
 
     context = {}
