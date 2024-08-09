@@ -87,6 +87,7 @@
                             <tr>
                                 <th>Data</th>
                                 <th>Categoria</th>
+                                <th></th>
                                 <th>Descrição</th>
                                 <th class="text-right">Valor</th>
                                 <th class="text-right">Saldo</th>
@@ -97,6 +98,7 @@
                             <tr>
                                 <td></td>
                                 <td></td>
+                                <td></td>
                                 <td>Saldo anterior</td>
                                 <td></td>
                                 <td class="text-right">{{ saldo_anterior|currency }}</td>
@@ -105,7 +107,17 @@
                             {% for item in lancamentos_paginados %}
                                 <tr>
                                     <td class='font-weight-bold'>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
-                                    <td><span class="text-white" style="background-color:{{item.lancamento.itens.first.categoria.cor}};border: 1px solid {{item.lancamento.itens.first.categoria.cor}};">{{ item.lancamento.itens.first.categoria }}</span></td>
+                                    <td>
+                                        <span class="text-white" style="background-color:{{item.lancamento.itens.first.categoria.cor}};border: 1px solid {{item.lancamento.itens.first.categoria.cor}};">
+                                            {{ item.lancamento.itens.first.categoria }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if item.lancamento.anexos.first %}
+                                        <img src="{% static 'fluxo/icones/anexo.png' %}" alt="">
+                                        {% endif %}
+                                    </td>
+
                                     <td>
                                         <a class="text-info" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id ad='0' %}">
                                             {{ item.lancamento.itens.first.descricao }}
