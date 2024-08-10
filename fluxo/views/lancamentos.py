@@ -127,7 +127,7 @@ def lancamentos(request, filtro):
             'saldo': saldo_acumulado,
             'quantidade_itens': quantidade_itens,
         })
-    paginator = Paginator(lancamentos_com_saldos, 20)
+    paginator = Paginator(lancamentos_com_saldos, 30)
     page_number = request.GET.get('page')
     lancamentos_paginados = paginator.get_page(page_number)
 
