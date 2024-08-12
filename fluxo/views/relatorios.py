@@ -44,7 +44,7 @@ def relatorio_fluxo(request):
 
     # Prepara o relatório final
     for categoria in categorias:
-        if categoria_totais[categoria.id]['valor_total'] > 0:  # Verifica se há algum valor diferente de zero
+        if categoria_totais[categoria.id]['valor_total'] != 0:  # Verifica se há algum valor diferente de zero
             relatorio.append({
                 'id': categoria.id,
                 'descricao': categoria_totais[categoria.id]['descricao'],
