@@ -16,23 +16,40 @@ def relatorio_fluxo(request):
     
     relatorio = []
 
+    categoria_totais = {}
+
+    # Inicializa os totais das categorias
     for categoria in categorias:
-        id = categoria.id
-        descricao = categoria.descricao
-        is_categoria_filha = categoria.is_categoria_filha
-        valores_mes = [0] * 12  # Inicializa uma lista com 12 zeros, um para cada mês
+        categoria_totais[categoria.id] = {
+            'descricao': categoria.descricao,
+            'valor_mes': [Decimal('0.00')] * 12,  # Inicializa uma lista com 12 zeros, um para cada mês
+            'valor_total': Decimal('0.00')
+        }
 
-        for item in itens:
-            if item.categoria.id == id:
-                mes = item.lancamento.data_lancamento.month
-                valores_mes[mes - 1] += item.valor  # Soma o valor no mês correto
+    # Soma os valores por categoria e mês
+    for item in itens:
+        categoria_id = item.categoria.id
+        mes = item.lancamento.data_lancamento.month
+        valor = item.valor
+        categoria_totais[categoria_id]['valor_mes'][mes - 1] += valor
+        categoria_totais[categoria_id]['valor_total'] += valor
 
-        if any(valores_mes):  # Verifica se há algum valor diferente de zero
+    # Agrega valores das subcategorias na categoria pai
+    for categoria in categorias:
+        if not categoria.is_categoria_filha:
+            for subcategoria in categoria.categoria_set.all():
+                for i in range(12):
+                    categoria_totais[categoria.id]['valor_mes'][i] += categoria_totais[subcategoria.id]['valor_mes'][i]
+                categoria_totais[categoria.id]['valor_total'] += categoria_totais[subcategoria.id]['valor_total']
+
+    # Prepara o relatório final
+    for categoria in categorias:
+        if categoria_totais[categoria.id]['valor_total'] > 0:  # Verifica se há algum valor diferente de zero
             relatorio.append({
-                'id': id,
-                'descricao': descricao,
-                'valor_mes': valores_mes,
-                'valor_total': sum(valores_mes),
+                'id': categoria.id,
+                'descricao': categoria_totais[categoria.id]['descricao'],
+                'valor_mes': categoria_totais[categoria.id]['valor_mes'],
+                'valor_total': categoria_totais[categoria.id]['valor_total'],
             })
 
     context = {
