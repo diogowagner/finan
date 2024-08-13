@@ -16,15 +16,38 @@ def relatorio_fluxo(request):
     
     relatorio = []
 
+    niveis = []
+
+    nivel_lista = {}
+
     categoria_totais = {}
 
     # Inicializa os totais das categorias
     for categoria in categorias:
+        if categoria.categoria_pai_id == None:
+            nivel = 1
+            nivel_lista[categoria.id] = {
+                'nivel': nivel,
+                'descricao': categoria.descricao,
+            }
+            if not nivel in niveis:
+                niveis.append(nivel)
+        elif categoria.categoria_pai_id in nivel_lista:
+            nivel = nivel_lista[categoria.categoria_pai_id]['nivel'] + 1
+            nivel_lista[categoria.id] = {
+                'nivel': nivel,
+                'descricao': categoria.descricao
+                }
+            if not nivel in niveis:
+                niveis.append(nivel)
         categoria_totais[categoria.id] = {
             'descricao': categoria.descricao,
             'valor_mes': [Decimal('0.00')] * 12,  # Inicializa uma lista com 12 zeros, um para cada mês
-            'valor_total': Decimal('0.00')
+            'valor_total': Decimal('0.00'),
+            'categoria_pai': categoria.categoria_pai_id,
+            'nivel': nivel,
         }
+
 
     # Soma os valores por categoria e mês
     for item in itens:
@@ -34,22 +57,12 @@ def relatorio_fluxo(request):
         categoria_totais[categoria_id]['valor_mes'][mes - 1] += valor
         categoria_totais[categoria_id]['valor_total'] += valor
 
-    # # Agrega valores das subcategorias na categoria pai
-    # for categoria in categorias:
-    #     if not categoria.is_categoria_filha:
-    #         for subcategoria in categoria.categoria_set.all():
-    #             for i in range(12):
-    #                 print(categoria_totais[categoria.id]['valor_mes'][i])
-    #                 # categoria_totais[categoria.id]['valor_mes'][i] += categoria_totais[subcategoria.id]['valor_mes'][i]
-    #             # categoria_totais[categoria.id]['valor_total'] += categoria_totais[subcategoria.id]['valor_total']
-
-
-    for categoria in categorias:
-        if categoria.categoria_pai_id != None:
-            for i in range(12):
-                # print(categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] + categoria_totais[categoria.id]['valor_mes'][i])
-                categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] += categoria_totais[categoria.id]['valor_mes'][i]
-            categoria_totais[categoria.categoria_pai_id]['valor_total'] += categoria_totais[categoria.id]['valor_total']
+    for i in sorted(niveis, reverse=True):
+        for categoria in categorias:
+            if categoria.categoria_pai_id != None and categoria_totais[categoria.id]['nivel'] == i:
+                for i in range(12):
+                    categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] += categoria_totais[categoria.id]['valor_mes'][i]
+                categoria_totais[categoria.categoria_pai_id]['valor_total'] += categoria_totais[categoria.id]['valor_total']
 
 
     # Prepara o relatório final
