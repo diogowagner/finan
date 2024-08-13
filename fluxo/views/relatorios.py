@@ -57,9 +57,9 @@ def relatorio_fluxo(request):
         categoria_totais[categoria_id]['valor_mes'][mes - 1] += valor
         categoria_totais[categoria_id]['valor_total'] += valor
 
-    for i in sorted(niveis, reverse=True):
+    for f in sorted(niveis, reverse=True):
         for categoria in categorias:
-            if categoria.categoria_pai_id != None and categoria_totais[categoria.id]['nivel'] == i:
+            if categoria.categoria_pai_id != None and categoria_totais[categoria.id]['nivel'] == f:
                 for i in range(12):
                     categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] += categoria_totais[categoria.id]['valor_mes'][i]
                 categoria_totais[categoria.categoria_pai_id]['valor_total'] += categoria_totais[categoria.id]['valor_total']
