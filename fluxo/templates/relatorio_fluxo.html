@@ -43,9 +43,9 @@
                     {% endif %}
                 {% endfor %}
                 {% if item.e_categoria_pai %}
-                    <td class='text-right font-weight-bold'>{{ item.valor_total }}</td>
+                    <td class='text-right font-weight-bold'>{{ item.valor_total|currency }}</td>
                 {% else %}
-                <td class='text-right'>{{ item.valor_total }}</td>
+                <td class='text-right'>{{ item.valor_total|currency }}</td>
                 {% endif %}
             </tr>
             {% endfor %}
