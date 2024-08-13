@@ -34,13 +34,23 @@ def relatorio_fluxo(request):
         categoria_totais[categoria_id]['valor_mes'][mes - 1] += valor
         categoria_totais[categoria_id]['valor_total'] += valor
 
-    # Agrega valores das subcategorias na categoria pai
+    # # Agrega valores das subcategorias na categoria pai
+    # for categoria in categorias:
+    #     if not categoria.is_categoria_filha:
+    #         for subcategoria in categoria.categoria_set.all():
+    #             for i in range(12):
+    #                 print(categoria_totais[categoria.id]['valor_mes'][i])
+    #                 # categoria_totais[categoria.id]['valor_mes'][i] += categoria_totais[subcategoria.id]['valor_mes'][i]
+    #             # categoria_totais[categoria.id]['valor_total'] += categoria_totais[subcategoria.id]['valor_total']
+
+
     for categoria in categorias:
-        if not categoria.is_categoria_filha:
-            for subcategoria in categoria.categoria_set.all():
-                for i in range(12):
-                    categoria_totais[categoria.id]['valor_mes'][i] += categoria_totais[subcategoria.id]['valor_mes'][i]
-                categoria_totais[categoria.id]['valor_total'] += categoria_totais[subcategoria.id]['valor_total']
+        if categoria.categoria_pai_id != None:
+            for i in range(12):
+                # print(categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] + categoria_totais[categoria.id]['valor_mes'][i])
+                categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] += categoria_totais[categoria.id]['valor_mes'][i]
+            categoria_totais[categoria.categoria_pai_id]['valor_total'] += categoria_totais[categoria.id]['valor_total']
+
 
     # Prepara o relatório final
     for categoria in categorias:
