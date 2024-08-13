@@ -24,7 +24,7 @@ def relatorio_fluxo(request):
 
     # Inicializa os totais das categorias
     for categoria in categorias:
-        if categoria.categoria_pai_id == None:
+        if categoria.categoria_pai_id is None:
             nivel = 1
             nivel_lista[categoria.id] = {
                 'nivel': nivel,
@@ -51,7 +51,7 @@ def relatorio_fluxo(request):
     categorias_pai = []
 
     for i in categoria_totais.values():
-        if i['categoria_pai'] != None and i['categoria_pai'] not in categorias_pai:
+        if i['categoria_pai'] is not None and i['categoria_pai'] not in categorias_pai:
             categorias_pai.append(i['categoria_pai'])
 
 
@@ -65,7 +65,7 @@ def relatorio_fluxo(request):
 
     for f in sorted(niveis, reverse=True):
         for categoria in categorias:
-            if categoria.categoria_pai_id != None and categoria_totais[categoria.id]['nivel'] == f:
+            if categoria.categoria_pai_id is not None and categoria_totais[categoria.id]['nivel'] == f:
                 for i in range(12):
                     categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] += categoria_totais[categoria.id]['valor_mes'][i]
                 categoria_totais[categoria.categoria_pai_id]['valor_total'] += categoria_totais[categoria.id]['valor_total']
@@ -74,7 +74,6 @@ def relatorio_fluxo(request):
     # Prepara o relatório final
     for categoria in categorias:
         if categoria_totais[categoria.id]['valor_total'] != 0:  # Verifica se há algum valor diferente de zero
-            print(categoria.id, categoria, categoria.id in categorias_pai)
             relatorio.append({
                 'id': categoria.id,
                 'descricao': categoria_totais[categoria.id]['descricao'],
