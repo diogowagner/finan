@@ -30,9 +30,17 @@
         <tbody>
             {% for item in relatorio %}
             <tr>
+                {% if item.e_categoria_pai %}
+                <td class="font-weight-bold" >{{ item.descricao }}</td>
+                {% else %}
                 <td>{{ item.descricao }}</td>
+                {% endif %}
                 {% for valor in item.valor_mes %}
+                    {% if item.e_categoria_pai %}
+                    <td class='text-right font-weight-bold'>{{valor|currency}}</td>
+                    {% else %}
                     <td class='text-right'>{{valor|currency}}</td>
+                    {% endif %}
                 {% endfor %}
                 <td class='text-right'>{{ item.valor_total }}</td>
             </tr>
