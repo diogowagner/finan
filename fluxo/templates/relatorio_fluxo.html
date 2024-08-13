@@ -42,7 +42,11 @@
                     <td class='text-right'>{{valor|currency}}</td>
                     {% endif %}
                 {% endfor %}
+                {% if item.e_categoria_pai %}
+                    <td class='text-right font-weight-bold'>{{ item.valor_total }}</td>
+                {% else %}
                 <td class='text-right'>{{ item.valor_total }}</td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
