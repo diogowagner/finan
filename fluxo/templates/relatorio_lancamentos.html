@@ -92,12 +92,10 @@
                         <td><span class="text-black" ">{{ item.lancamento.itens.first.categoria }}</span></td>
                         <td>
                             <a class="text-black">
-                                {{ item.descricao }}
+                                 {{item.descricao}}
                             </a>
                         </td>
-                        <td class="text-right {% if item.lancamento.valor_total >= 0 %}text-primary {% else %} text-danger {% endif %}">{{ item.lancamento.valor_total|currency }}</td>
-
-                        
+                        <td class="text-right {% if item.lancamento.valor_total >= 0 %}text-primary {% else %} text-danger {% endif %}">{{ item.valor|currency }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
