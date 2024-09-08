@@ -89,7 +89,7 @@
                 {% for item in lancamentos_list %}
                     <tr>
                         <td class='font-weight-bold'>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
-                        <td><span class="text-black" ">{{ item.lancamento.itens.first.categoria }}</span></td>
+                        <td><span class="text-black" ">{{ item.categoria }}</span></td>
                         <td>
                             <a class="text-black">
                                  {{item.descricao}}
