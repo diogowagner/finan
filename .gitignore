@@ -4,7 +4,10 @@ project/local_settings.py
 gunicorn-error-log
 __localcode
 /data/
-migrations/
+
+
+
+
 backups/
 
 # Django #
@@ -13,6 +16,7 @@ backups/
 *.pyc
 __pycache__
 db.sqlite3
+db.sqlite3_bak
 
 # Backup files #
 *.bak
