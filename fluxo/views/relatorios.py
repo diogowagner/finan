@@ -11,9 +11,21 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def relatorio_fluxo(request):
-    itens = Item.objects.select_related('categoria', 'lancamento').all().filter(lancamento__situacao='PAGO')
+
+    data_ano = request.GET.get('data_ano')
+
+    if data_ano == None or data_ano == '':
+        data_ano = datetime.now().year
+    else:
+        data_ano
+
+    itens = Item.objects.select_related('categoria', 'lancamento').all().filter(lancamento__situacao='PAGO').filter(
+                lancamento__data_lancamento__year = data_ano
+                )
     categorias = Categoria.objects.all().filter(ativo=True)
-    
+
+    data = datetime.now()
+
     relatorio = []
 
     niveis = []
@@ -59,9 +71,11 @@ def relatorio_fluxo(request):
     for item in itens:
         categoria_id = item.categoria.id
         mes = item.lancamento.data_lancamento.month
+        ano = item.lancamento.data_lancamento.year
         valor = item.valor
         categoria_totais[categoria_id]['valor_mes'][mes - 1] += valor
         categoria_totais[categoria_id]['valor_total'] += valor
+
 
     for f in sorted(niveis, reverse=True):
         for categoria in categorias:
@@ -85,6 +99,7 @@ def relatorio_fluxo(request):
     context = {
         'relatorio': relatorio,
         'titulo': 'Relatórios',
+        'data_ano': data_ano,
     }
 
     return render(request, 'relatorio_fluxo.html', context)

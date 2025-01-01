@@ -7,23 +7,39 @@
 
 <br>
 <div class="container-xg py-5">
+    <div class="col-12">
+        <form method="GET" action=".">
+            <div class="row justify-content-end">
+                <div class="col-3 col-md-2 mb-3">
+                    <select class="form-control" name="data_ano" id="data_ano">
+                        <option value="">Escolha um ano</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+                <div class="col-3 col-md-1 mb-1">
+                    <button type="submit" class="btn btn-secondary btn btn-block">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
 <div class="table-responsive">
     <table class="table table-hover table-sm">
         <thead>
             <tr>
                 <th>Categoria</th>
-                <th>01/2024</th>
-                <th>02/2024</th>
-                <th>03/2024</th>
-                <th>04/2024</th>
-                <th>05/2024</th>
-                <th>06/2024</th>
-                <th>07/2024</th>
-                <th>08/2024</th>
-                <th>09/2024</th>
-                <th>10/2024</th>
-                <th>11/2024</th>
-                <th>12/2024</th>
+                <th>01/{{data_ano}}</th>
+                <th>02/{{data_ano}}</th>
+                <th>03/{{data_ano}}</th>
+                <th>04/{{data_ano}}</th>
+                <th>05/{{data_ano}}</th>
+                <th>06/{{data_ano}}</th>
+                <th>07/{{data_ano}}</th>
+                <th>08/{{data_ano}}</th>
+                <th>09/{{data_ano}}</th>
+                <th>10/{{data_ano}}</th>
+                <th>11/{{data_ano}}</th>
+                <th>12/{{data_ano}}</th>
                 <th>Total</th>
             </tr>
         </thead>
