@@ -7,3 +7,4 @@ from .logout import *
 from .inicio import *
 from .transferir import *
 from .relatorios import *
+from .exporta_excel import *
