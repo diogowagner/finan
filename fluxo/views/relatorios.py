@@ -102,7 +102,6 @@ def relatorio_lancamentos(request):
     itens = Item.objects.select_related('categoria', 'lancamento').all().filter(lancamento__situacao='PAGO')
     categorias = Categoria.objects.all().filter(ativo=True)
 
-    print(request.GET)
 
     relatorio = []
 
@@ -174,8 +173,8 @@ def relatorio_lancamentos(request):
 
 
     itemForm = ItemFormOp()
-    print(data_inicio)
-    print(data_fim)
+    # print(data_inicio)
+    # print(data_fim)
 
     context = {
         'relatorio': relatorio,

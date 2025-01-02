@@ -51,7 +51,6 @@
                 {% else %}
                 <td>{{ item.descricao }}</td>
                 {% endif %}
-                {{item.valor_mes}}
                 {% for valor in item.valor_mes %}
                     {% if item.e_categoria_pai %}
                     <td class='text-right font-weight-bold'>{{valor|currency}}</td>
@@ -72,6 +71,5 @@
             {% endfor %}
         </tbody>
     </table>
-    {{relatorio}}
 </div>
 {% endblock conteudo %}
