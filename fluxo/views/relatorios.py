@@ -17,6 +17,9 @@ def relatorio_fluxo(request):
 
     data_ano = request.GET.get('data_ano', datetime.now().year)
 
+    if data_ano is None or data_ano == '':
+        data_ano = datetime.now().year
+
     data_ano = int(data_ano)
 
     itens = Item.objects.select_related('categoria', 'lancamento').filter(
