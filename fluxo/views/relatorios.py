@@ -3,6 +3,7 @@ from django.shortcuts import render
 from fluxo.models import Item, Lancamento
 from finan.models import Categoria
 from datetime import datetime, date, timedelta
+from calendar import monthrange
 from fluxo.forms import (
                     ItemFormOp, 
                     )
@@ -11,75 +12,67 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def relatorio_fluxo(request):
+    from datetime import datetime
+    from decimal import Decimal
 
-    data_ano = request.GET.get('data_ano')
+    data_ano = request.GET.get('data_ano', datetime.now().year)
 
-    if data_ano == None or data_ano == '':
-        data_ano = datetime.now().year
-    else:
-        data_ano
+    data_ano = int(data_ano)
 
-    itens = Item.objects.select_related('categoria', 'lancamento').all().filter(lancamento__situacao='PAGO').filter(
-                lancamento__data_lancamento__year = data_ano
-                )
-    categorias = Categoria.objects.all().filter(ativo=True)
-
-    data = datetime.now()
+    itens = Item.objects.select_related('categoria', 'lancamento').filter(
+        lancamento__situacao='PAGO',
+        lancamento__data_lancamento__year=data_ano
+    )
+    categorias = Categoria.objects.filter(ativo=True)
 
     relatorio = []
-
     niveis = []
-
     nivel_lista = {}
-
     categoria_totais = {}
 
     # Inicializa os totais das categorias
     for categoria in categorias:
-        if categoria.categoria_pai_id is None:
-            nivel = 1
-            nivel_lista[categoria.id] = {
-                'nivel': nivel,
-                'descricao': categoria.descricao,
-            }
-            if not nivel in niveis:
-                niveis.append(nivel)
-        elif categoria.categoria_pai_id in nivel_lista:
+        nivel = 1
+        if categoria.categoria_pai_id in nivel_lista:
             nivel = nivel_lista[categoria.categoria_pai_id]['nivel'] + 1
-            nivel_lista[categoria.id] = {
-                'nivel': nivel,
-                'descricao': categoria.descricao
-                }
-            if not nivel in niveis:
-                niveis.append(nivel)
+        nivel_lista[categoria.id] = {
+            'nivel': nivel,
+            'descricao': categoria.descricao,
+        }
+        if nivel not in niveis:
+            niveis.append(nivel)
         categoria_totais[categoria.id] = {
             'descricao': categoria.descricao,
-            'valor_mes': [Decimal('0.00')] * 12,  # Inicializa uma lista com 12 zeros, um para cada mês
+            'valor_mes': [[Decimal('0.00'), mes, 31, data_ano] for mes in range(1, 13)],
             'valor_total': Decimal('0.00'),
             'categoria_pai': categoria.categoria_pai_id,
             'nivel': nivel,
         }
 
-    categorias_pai = []
-
-    for i in categoria_totais.values():
-        if i['categoria_pai'] is not None and i['categoria_pai'] not in categorias_pai:
-            categorias_pai.append(i['categoria_pai'])
-
+    categorias_pai = [
+        categoria.categoria_pai_id
+        for categoria in categorias if categoria.categoria_pai_id is not None
+    ]
 
     # Soma os valores por categoria e mês
     for item in itens:
         categoria_id = item.categoria.id
         mes = item.lancamento.data_lancamento.month
-        ano = item.lancamento.data_lancamento.year
         valor = item.valor
-        categoria_totais[categoria_id]['valor_mes'][mes - 1] += valor
+        categoria_totais[categoria_id]['valor_mes'][mes - 1][0] += valor
         categoria_totais[categoria_id]['valor_total'] += valor
 
+    # Calcula o último dia de cada mês
+    for categoria_id, dados in categoria_totais.items():
+        for valor in dados['valor_mes']:
+            data_mes = valor[1]  # Mês
+            ultimo_dia = monthrange(data_ano, data_mes)[1]
+            valor[2] = ultimo_dia  # Atualiza o terceiro elemento com o último dia do mês
 
+    # Agrega valores para categorias pai
     for f in sorted(niveis, reverse=True):
         for categoria in categorias:
-            if categoria.categoria_pai_id is not None and categoria_totais[categoria.id]['nivel'] == f:
+            if categoria.categoria_pai_id and categoria_totais[categoria.id]['nivel'] == f:
                 for i in range(12):
                     categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] += categoria_totais[categoria.id]['valor_mes'][i]
                 categoria_totais[categoria.categoria_pai_id]['valor_total'] += categoria_totais[categoria.id]['valor_total']
@@ -87,7 +80,7 @@ def relatorio_fluxo(request):
 
     # Prepara o relatório final
     for categoria in categorias:
-        if categoria_totais[categoria.id]['valor_total'] != 0:  # Verifica se há algum valor diferente de zero
+        if categoria_totais[categoria.id]['valor_total'] != 0:
             relatorio.append({
                 'id': categoria.id,
                 'descricao': categoria_totais[categoria.id]['descricao'],

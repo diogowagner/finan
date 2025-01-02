@@ -89,9 +89,9 @@
                 {% for item in lancamentos_list %}
                     <tr>
                         <td class='font-weight-bold'>{{ item.lancamento.data_lancamento|date:"d M" }}</td>
-                        <td><span class="text-black" ">{{ item.categoria }}</span></td>
+                        <td><span class="text-black" > {{ item.categoria }} </span> </td>
                         <td>
-                            <a class="text-black">
+                            <a class="text-dark" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id ad='0' %}">
                                  {{item.descricao}}
                             </a>
                         </td>
