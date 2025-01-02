@@ -53,7 +53,7 @@
                 {% endif %}
                 {% for valor in item.valor_mes %}
                     {% if item.e_categoria_pai %}
-                    <td class='text-right font-weight-bold'>{{valor|currency}}</td>
+                    <td class='text-right font-weight-bold'>{{valor.0|currency}}</td>
                     {% else %}
                         <td class='text-right'>
                             <a class='text-dark' href="{% url "fluxo:relatorio_lancamentos" %}?categoria={{item.id}}&data_inicio={{valor.3}}-{{valor.1}}-1&data_fim={{valor.3}}-{{valor.1}}-{{valor.2}}">
