@@ -77,7 +77,7 @@ def relatorio_fluxo(request):
         for categoria in categorias:
             if categoria.categoria_pai_id and categoria_totais[categoria.id]['nivel'] == f:
                 for i in range(12):
-                    categoria_totais[categoria.categoria_pai_id]['valor_mes'][i] += categoria_totais[categoria.id]['valor_mes'][i]
+                    categoria_totais[categoria.categoria_pai_id]['valor_mes'][i][0] += categoria_totais[categoria.id]['valor_mes'][i][0]
                 categoria_totais[categoria.categoria_pai_id]['valor_total'] += categoria_totais[categoria.id]['valor_total']
 
 
