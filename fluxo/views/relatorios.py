@@ -174,6 +174,16 @@ def relatorio_lancamentos(request):
     if categoria_selecionada:
         lancamentos_list = lancamentos_list.filter(categoria_id=categoria_selecionada)
 
+    total_entradas = 0
+    total_saidas = 0
+
+    for lancamento in lancamentos_list:
+        if lancamento.lancamento.tipo == 'RECEITA' and lancamento.lancamento.situacao == 'PAGO':
+            total_entradas += lancamento.lancamento.valor_total
+        elif lancamento.lancamento.tipo == 'DESPESA' and lancamento.lancamento.situacao == 'PAGO':
+            total_saidas += lancamento.lancamento.valor_total
+
+    resultado = total_entradas + total_saidas
 
     itemForm = ItemFormOp()
     # print(data_inicio)
@@ -181,6 +191,9 @@ def relatorio_lancamentos(request):
 
     context = {
         'relatorio': relatorio,
+        'total_entradas': total_entradas,
+        'total_saidas': total_saidas,
+        'resultado': resultado,
         'titulo': 'Relatório Lancamentos',
         'itemForm': itemForm,
         'lancamentos_list': lancamentos_list,
