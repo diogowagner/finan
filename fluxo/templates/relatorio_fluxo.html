@@ -64,9 +64,7 @@
                 {% endfor %}
                 {% if item.e_categoria_pai %}
                     <td class='text-right font-weight-bold'>
-                        <a class='text-dark' href="{% url "fluxo:relatorio_lancamentos" %}?categoria={{item.id}}&data_inicio={{valor.3}}-{{valor.1}}-1&data_fim={{valor.3}}-{{valor.1}}-{{valor.2}}">
                             {{ item.valor_total|currency }}
-                        </a>
                     </td>
                 {% else %}
                 <td class='text-right'>{{ item.valor_total|currency }}</td>
