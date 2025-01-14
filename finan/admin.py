@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, Conta, Empresa
+from .models import Categoria, Conta, Empresa, CentroCusto
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
@@ -27,4 +27,8 @@ class AdminConta(admin.ModelAdmin):
 class AdminEmpresa(admin.ModelAdmin):
     pass
 
+
+@admin.register(CentroCusto)
+class AdminCentroCusto(admin.ModelAdmin):
+    pass
 
