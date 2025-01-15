@@ -69,7 +69,7 @@ def transferir(request):
                 item_destino = Item.objects.create(
                                                     descricao = descricao,
                                                     valor = valor,
-                                                    categoria_id = 175,
+                                                    categoria_id = 180,
                                                     lancamento_id = lanc_destino.id,
                                                 )
                 item_destino.save()
