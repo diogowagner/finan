@@ -46,7 +46,7 @@ def transferir(request):
                 item_origem = Item.objects.create(
                                                     descricao = descricao,
                                                     valor = valor * -1,
-                                                    categoria_id = 175,
+                                                    categoria_id = 180,
                                                     lancamento_id = lanc_origem.id,
                                                 )
                 item_origem.save()
