@@ -44,31 +44,32 @@
             </thead>
             <tbody>
                 {% for item in relatorio %}
-                <tr>
-                    <td class="{% if item.e_categoria_pai %}font-weight-bold bg-light{% endif %}">
-                        {{ item.descricao }}
-                    </td>
-                    {% for valor in item.valor_mes %}
-                        <td class="text-right {% if item.e_categoria_pai %}font-weight-bold{% endif %}">
-                            {% if not item.e_categoria_pai %}
-                                <a class="text-dark" href="{% url "fluxo:relatorio_lancamentos" %}?categoria={{item.id}}&data_inicio={{valor.3}}-{{valor.1}}-1&data_fim={{valor.3}}-{{valor.1}}-{{valor.2}}">
-                                    {{ valor.0|currency }}
-                                </a>
+                    <tr>
+                        {% if item.e_categoria_pai %}
+                        <td class="font-weight-bold" >{{ item.descricao }}</td>
+                        {% else %}
+                        <td>{{ item.descricao }}</td>
+                        {% endif %}
+                        {% for valor in item.valor_mes %}
+                            {% if item.e_categoria_pai %}
+                            <td class='text-right font-weight-bold'>{{valor.0|currency}}</td>
                             {% else %}
-                                {{ valor.0|currency }}
+                                <td class='text-right'>
+                                    <a class='text-dark' href="{% url "fluxo:relatorio_lancamentos" %}?categoria={{item.id}}&data_inicio={{valor.3}}-{{valor.1}}-1&data_fim={{valor.3}}-{{valor.1}}-{{valor.2}}">
+                                        {{valor.0|currency}} 
+                                    </a>
+                                </td>
                             {% endif %}
-                        </td>
-                    {% endfor %}
-                    <td class="text-right {% if item.e_categoria_pai %}font-weight-bold{% endif %}">
-                        {{ item.valor_total|currency }}
-                    </td>
-                </tr>
+                        {% endfor %}
+                        {% if item.e_categoria_pai %}
+                            <td class='text-right font-weight-bold'>
+                                    {{ item.valor_total|currency }}
+                            </td>
+                        {% else %}
+                        <td class='text-right'>{{ item.valor_total|currency }}</td>
+                        {% endif %}
+                    </tr>
                 {% endfor %}
-                <tr class="font-weight-bold">
-                    <td>RESULTADO</td>
-                    {% for total in resultado_mes %}
-                        <td class="text-right">{{ total.0|currency }}</td>
-                    {% endfor %}
                     <td class="text-right">{{ resultado_total|currency }}</td>
                 </tr>
             </tbody>
