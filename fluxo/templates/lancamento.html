@@ -128,7 +128,7 @@
 
                                     <td>
                                         <a class="text-info" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id ad='0' %}">
-                                            {{ item.lancamento.itens.first.descricao|slice:":40" }}
+                                            {{ item.lancamento.itens.first.descricao|truncatechars:40 }}
                                             {% if item.quantidade_itens > 1 %}
                                             ({{ item.quantidade_itens}})
                                             {% endif %}
