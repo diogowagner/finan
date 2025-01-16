@@ -46,9 +46,9 @@
                 {% for item in relatorio %}
                     <tr>
                         {% if item.e_categoria_pai %}
-                        <td class="font-weight-bold" >{{ item.descricao }}</td>
+                            <td class="font-weight-bold" >{{ item.descricao }}</td>
                         {% else %}
-                        <td>{{ item.descricao }}</td>
+                            <td>{{ item.descricao }}</td>
                         {% endif %}
                         {% for valor in item.valor_mes %}
                             {% if item.e_categoria_pai %}
@@ -66,10 +66,15 @@
                                     {{ item.valor_total|currency }}
                             </td>
                         {% else %}
-                        <td class='text-right'>{{ item.valor_total|currency }}</td>
+                            <td class='text-right'>{{ item.valor_total|currency }}</td>
                         {% endif %}
                     </tr>
                 {% endfor %}
+                <tr class="font-weight-bold">
+                    <td>RESULTADO</td>
+                    {% for total in resultado_mes %}
+                        <td class="text-right">{{ total.0|currency }}</td>
+                    {% endfor %}
                     <td class="text-right">{{ resultado_total|currency }}</td>
                 </tr>
             </tbody>
