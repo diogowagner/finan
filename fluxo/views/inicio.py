@@ -21,10 +21,16 @@ def inicio(request):
                }
         lista_saldos.append(conta_saldo)
 
+    saldo_total = 0
+
+    for i in lista_saldos:
+        saldo_total += saldo
+
     context = {
         'is_inicio': True,
         'apagar': apagar,
         'lista_saldos': lista_saldos,
+        'saldo_total': saldo_total,
     }
 
     return render(
