@@ -92,10 +92,29 @@ def relatorio_fluxo(request):
                 'e_categoria_pai': categoria.id in categorias_pai,
             })
 
+    meses = list(range(1, 13))  # Lista de meses de 1 a 12
+
+    totais_colunas = [Decimal('0.00')] * 12  # Inicializa uma lista de 12 zeros
+
+    # Calcula os totais por coluna apenas para categorias pai
+    for categoria in categorias:
+        if categoria.id in categorias_pai:  # Apenas categorias pai
+            for mes_idx, mes_dados in enumerate(categoria_totais[categoria.id]['valor_mes']):
+                totais_colunas[mes_idx] += mes_dados[0]
+
+    resultado_total = 0
+
+    for r in relatorio:
+        if r['e_categoria_pai']:
+            resultado_total += r['valor_total']
+
     context = {
         'relatorio': relatorio,
         'titulo': 'Relatórios',
         'data_ano': data_ano,
+        'meses': meses,  # Adiciona a lista de meses ao contexto
+        'totais_colunas': totais_colunas,  # Passa os totais ao template
+        'resultado_total': resultado_total,
     }
 
     return render(request, 'relatorio_fluxo.html', context)
