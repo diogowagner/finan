@@ -66,8 +66,8 @@
                 {% endfor %}
                 <tr class="font-weight-bold">
                     <td>RESULTADO</td>
-                    {% for total in totais_colunas %}
-                        <td class="text-right">{{ total|currency }}</td>
+                    {% for total in resultado_mes %}
+                        <td class="text-right">{{ total.0|currency }}</td>
                     {% endfor %}
                     <td class="text-right">{{ resultado_total|currency }}</td>
                 </tr>

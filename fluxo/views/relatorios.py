@@ -32,6 +32,7 @@ def relatorio_fluxo(request):
     niveis = []
     nivel_lista = {}
     categoria_totais = {}
+    resultado_mes = [[Decimal('0.00'), mes, 31, data_ano] for mes in range(1, 13)]
 
     # Inicializa os totais das categorias
     for categoria in categorias:
@@ -57,6 +58,7 @@ def relatorio_fluxo(request):
         for categoria in categorias if categoria.categoria_pai_id is not None
     ]
 
+
     # Soma os valores por categoria e mês
     for item in itens:
         categoria_id = item.categoria.id
@@ -64,6 +66,13 @@ def relatorio_fluxo(request):
         valor = item.valor
         categoria_totais[categoria_id]['valor_mes'][mes - 1][0] += valor
         categoria_totais[categoria_id]['valor_total'] += valor
+
+
+    for i in categoria_totais.values():
+        mes = item.lancamento.data_lancamento.month
+        for n in range(12):
+            resultado_mes[n][0] += i['valor_mes'][n][0]
+
 
     # Calcula o último dia de cada mês
     for categoria_id, dados in categoria_totais.items():
@@ -92,28 +101,21 @@ def relatorio_fluxo(request):
                 'e_categoria_pai': categoria.id in categorias_pai,
             })
 
+
     meses = list(range(1, 13))  # Lista de meses de 1 a 12
-
-    totais_colunas = [Decimal('0.00')] * 12  # Inicializa uma lista de 12 zeros
-
-    # Calcula os totais por coluna apenas para categorias pai
-    for categoria in categorias:
-        if categoria.id in categorias_pai:  # Apenas categorias pai
-            for mes_idx, mes_dados in enumerate(categoria_totais[categoria.id]['valor_mes']):
-                totais_colunas[mes_idx] += mes_dados[0]
 
     resultado_total = 0
 
-    for r in relatorio:
-        if r['e_categoria_pai']:
-            resultado_total += r['valor_total']
+    for r in resultado_mes:
+        resultado_total += r[0]
+
 
     context = {
         'relatorio': relatorio,
         'titulo': 'Relatórios',
         'data_ano': data_ano,
         'meses': meses,  # Adiciona a lista de meses ao contexto
-        'totais_colunas': totais_colunas,  # Passa os totais ao template
+        'resultado_mes': resultado_mes,
         'resultado_total': resultado_total,
     }
 
