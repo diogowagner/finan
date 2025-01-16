@@ -30,12 +30,12 @@
                 <td></td>
               </tr>
               {% endfor %}
-              {% comment %} <tr>
+              <tr>
                 <th class="text-dark" scope="col">Saldo Total</th>
                 <th class="text-right text-dark" scope="col">{{ saldo_total|currency }}</th>
                 <th></th>
                 <th></th>
-              </tr> {% endcomment %}
+              </tr>
             </tbody>
           </table>
             <a href="{% url "fluxo:lancamentos" filtro='todos' %}" class="btn btn-primary">Ir Lançamentos</a>

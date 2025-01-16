@@ -24,7 +24,7 @@ def inicio(request):
     saldo_total = 0
 
     for i in lista_saldos:
-        saldo_total += saldo
+        saldo_total += i['saldo']
 
     context = {
         'is_inicio': True,
