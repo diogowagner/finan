@@ -90,6 +90,7 @@
                             <tr>
                                 <th>Data</th>
                                 <th>Categoria</th>
+                                <th>Conta</th>
                                 <th></th>
                                 <th>Descrição</th>
                                 <th class="text-right">Valor</th>
@@ -99,6 +100,7 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -114,6 +116,9 @@
                                         <span class="text-white" style="background-color:{{item.lancamento.itens.first.categoria.cor}};border: 1px solid {{item.lancamento.itens.first.categoria.cor}};">
                                             {{ item.lancamento.itens.first.categoria }}
                                         </span>
+                                    </td>
+                                    <td>
+                                        {{ item.lancamento.conta }}
                                     </td>
                                     <td>
                                         {% if item.lancamento.anexos.first.arquivo %}
