@@ -61,7 +61,7 @@
                   <th class="text-info" scope="row">{{conta.data_lancamento|date:"d M"}}</th>
                   <td class="text-info" >
                     <a class="text-info" href="{% url 'fluxo:editar_lancamento' tipo=conta.tipo id=conta.id ad='0' %}">
-                    {{conta.itens.first.descricao}}
+                    {{conta.itens.first.descricao|truncatechars:40}}
                     </a>
                   </td>
                   <td class="text-right text-danger">{{conta.valor_total|currency}}</td>
