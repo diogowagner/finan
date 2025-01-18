@@ -17,15 +17,28 @@ def relatorio_fluxo(request):
 
     data_ano = request.GET.get('data_ano', datetime.now().year)
 
+    opcao = request.GET.get('opcao', 'todos')
+
     if data_ano is None or data_ano == '':
         data_ano = datetime.now().year
 
     data_ano = int(data_ano)
 
-    itens = Item.objects.select_related('categoria', 'lancamento').filter(
-        lancamento__situacao='PAGO',
-        lancamento__data_lancamento__year=data_ano
-    )
+    if opcao == 'todos':
+        itens = Item.objects.select_related('categoria', 'lancamento').filter(
+            lancamento__data_lancamento__year=data_ano
+        )
+    elif opcao == 'pagos':
+        itens = Item.objects.select_related('categoria', 'lancamento').filter(
+            lancamento__situacao='PAGO',
+            lancamento__data_lancamento__year=data_ano
+        )
+    elif opcao == 'apagar':
+        itens = Item.objects.select_related('categoria', 'lancamento').filter(
+            lancamento__situacao='APAGAR',
+            lancamento__data_lancamento__year=data_ano
+        )
+
     categorias = Categoria.objects.filter(ativo=True)
 
     relatorio = []
@@ -67,9 +80,7 @@ def relatorio_fluxo(request):
         categoria_totais[categoria_id]['valor_mes'][mes - 1][0] += valor
         categoria_totais[categoria_id]['valor_total'] += valor
 
-
     for i in categoria_totais.values():
-        mes = item.lancamento.data_lancamento.month
         for n in range(12):
             resultado_mes[n][0] += i['valor_mes'][n][0]
 
@@ -114,6 +125,7 @@ def relatorio_fluxo(request):
         'relatorio': relatorio,
         'titulo': 'Relatórios',
         'data_ano': data_ano,
+        'opcao': opcao,
         'meses': meses,  # Adiciona a lista de meses ao contexto
         'resultado_mes': resultado_mes,
         'resultado_total': resultado_total,
