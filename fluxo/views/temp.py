@@ -9,6 +9,7 @@ from fluxo.forms import (
                     CategoriaForm, 
                     ContaForm,
                     FornecedorClienteForm,
+                    CentroCustoForm,
                     )
 from django.http import QueryDict
 from django.forms import modelformset_factory
@@ -82,3 +83,19 @@ def filtros(request):
         'filtros.html',
         context
     )
+
+@login_required
+def cadastro_centro_custo(request):
+    if request.method == 'POST':
+        form = CentroCustoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/lancamentos/todos/')
+    else:
+        form = CentroCustoForm()
+    
+    context = {
+        'form': form,
+        'titulo': 'Criar Centro de Custo'
+    }
+    return render(request, 'cad_centro_custo.html', context)

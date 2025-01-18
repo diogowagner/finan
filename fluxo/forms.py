@@ -1,6 +1,6 @@
 from django.forms import ModelForm, inlineformset_factory
 from django import forms
-from .models import Lancamento, Anexo, Item, Categoria, FornecedorCliente, Conta, Transferencia
+from .models import Lancamento, Anexo, Item, Categoria, FornecedorCliente, Conta, Transferencia, CentroCusto
 
 
 class BaseLancamentosForm(ModelForm):
@@ -76,7 +76,7 @@ class ItemForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Ordenar as categorias por nome
-        self.fields['categoria'].queryset = Categoria.objects.all().order_by('descricao')
+        self.fields['categoria'].queryset = Categoria.objects.filter(ativo=True).order_by('descricao')
         self.fields['categoria'].empty_label = "Selecione uma categoria"
         self.fields['centro_custo_lucro'].empty_label = "Centro de custo/lucro"
         self.fields['fornecedor_cliente'].empty_label = "Selecione um fornecedor/cliente"
@@ -243,3 +243,17 @@ class TransferenciaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['descricao'].initial = "Transferência entre contas"
+
+
+class CentroCustoForm(forms.ModelForm):
+    class Meta:
+        model = CentroCusto
+        fields = (
+            'descricao',
+            'tipo_centro_custo',
+        )
+
+        widgets = {
+            'descricao': forms.TextInput(attrs={'class':"form-control"}),
+            'tipo_centro_custo': forms.Select(attrs={'class':"form-control"}),
+        }

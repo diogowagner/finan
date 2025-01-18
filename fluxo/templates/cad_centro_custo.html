@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block conteudo %}
+
+<main role="main" class="flex-shrink-0">
+    <br>
+    <div class="container py-5">
+    <h3 class='text-center'>{{ titulo }}</h3>
+    <br>
+    <div class="row justify-content-md-center">
+        <div class="col-md-6">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
