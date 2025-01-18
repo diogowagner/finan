@@ -219,9 +219,9 @@ def relatorio_lancamentos(request):
     total_saidas = 0
 
     for lancamento in lancamentos_list:
-        if lancamento.lancamento.tipo == 'RECEITA' and lancamento.lancamento.situacao == 'PAGO':
+        if lancamento.lancamento.tipo == 'RECEITA':
             total_entradas += lancamento.valor
-        elif lancamento.lancamento.tipo == 'DESPESA' and lancamento.lancamento.situacao == 'PAGO':
+        elif lancamento.lancamento.tipo == 'DESPESA':
             total_saidas += lancamento.valor
 
     resultado = total_entradas + total_saidas
