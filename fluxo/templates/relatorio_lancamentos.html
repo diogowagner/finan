@@ -33,11 +33,18 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                {{ lancamentoForm.conta }}
-                                <div class="invalid-feedback">
-                                    Por favor, escolha uma conta.
+                        <div class="row justify-content-end">
+                            <div class="col-md-4 mb-3 text-center">
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                        <label class="btn btn-secondary {% if opcao == 'todos' %}active{% endif %}">
+                                        <input type="radio" name="opcao" id="opcao1" value="todos" autocomplete="off" {% if opcao == 'todos' %}checked{% endif %} > Todos
+                                        </label>
+                                        <label class="btn btn-secondary {% if opcao == 'pagos' %}active{% endif %}">
+                                        <input type="radio" name="opcao" id="opcao2" value="pagos" autocomplete="off" {% if opcao == 'pagos' %}checked{% endif %} > Pagos
+                                        </label>
+                                        <label class="btn btn-secondary {% if opcao == 'apagar' %}active{% endif %}">
+                                        <input type="radio" name="opcao" id="opcao3" value="apagar" autocomplete="off" {% if opcao == 'apagar' %}checked{% endif %} > A pagar
+                                        </label>
                                 </div>
                             </div>
                             <div class="col-md-8 mb-3 text-center">
@@ -87,6 +94,7 @@
                         <th>Categoria</th>
                         <th>Descrição</th>
                         <th class="text-right">Valor</th>
+                        <th class="text-center">Situação</th>
                     </tr>
                 </thead>
             </thead>
@@ -97,10 +105,15 @@
                         <td><span class="text-black" > {{ item.categoria }} </span> </td>
                         <td>
                             <a class="text-dark" href="{% url 'fluxo:editar_lancamento' tipo=item.lancamento.tipo id=item.lancamento.id ad='0' %}">
-                                 {{item.descricao}}
+                                 {{item.descricao|truncatechars:50}}
                             </a>
                         </td>
                         <td class="text-right {% if item.lancamento.valor_total >= 0 %}text-primary {% else %} text-danger {% endif %}">{{ item.valor|currency }}</td>
+                        {% if item.lancamento.situacao == 'PAGO' %}
+                            <td class='text-center'>Pago</td>
+                        {% else %}
+                            <td class='text-center'>A Pagar</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

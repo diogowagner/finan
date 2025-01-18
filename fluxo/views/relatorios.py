@@ -135,9 +135,11 @@ def relatorio_fluxo(request):
 
 @login_required
 def relatorio_lancamentos(request):
-    itens = Item.objects.select_related('categoria', 'lancamento').all().filter(lancamento__situacao='PAGO')
-    categorias = Categoria.objects.all().filter(ativo=True)
+    opcao = request.GET.get('opcao', 'todos')
 
+    if 'categoria' in request.GET:
+        categoria_selecionada = request.GET.get('categoria')
+        # request.session['categoria_selecionada'] = categoria_selecionada
 
     relatorio = []
 
@@ -201,8 +203,14 @@ def relatorio_lancamentos(request):
         lancamento__data_lancamento__range=(data_inicio, data_fim)
     ).order_by("lancamento__data_lancamento", "lancamento__pk")
 
-    filtro = 'pago'
-    lancamentos_list = lancamentos_list.filter(lancamento__situacao=filtro.upper())
+    print(opcao)
+
+    if opcao == 'todos':
+        lancamentos_list = lancamentos_list
+    elif opcao == 'pagos':
+        lancamentos_list = lancamentos_list.filter(lancamento__situacao='PAGO')
+    elif opcao == 'apagar':
+        lancamentos_list = lancamentos_list.filter(lancamento__situacao='APAGAR')
 
     if categoria_selecionada:
         lancamentos_list = lancamentos_list.filter(categoria_id=categoria_selecionada)
@@ -218,7 +226,7 @@ def relatorio_lancamentos(request):
 
     resultado = total_entradas + total_saidas
 
-    itemForm = ItemFormOp()
+    itemForm = ItemFormOp(initial={'categoria':categoria_selecionada})
     # print(data_inicio)
     # print(data_fim)
 
@@ -228,6 +236,7 @@ def relatorio_lancamentos(request):
         'total_saidas': total_saidas,
         'resultado': resultado,
         'titulo': 'Relatório Lancamentos',
+        'opcao': opcao,
         'itemForm': itemForm,
         'lancamentos_list': lancamentos_list,
         'data_inicio': data_inicio.isoformat() if data_inicio else '',
