@@ -39,7 +39,7 @@ def relatorio_fluxo(request):
             lancamento__data_lancamento__year=data_ano
         )
 
-    categorias = Categoria.objects.filter(ativo=True)
+    categorias = Categoria.objects.all()
 
     relatorio = []
     niveis = []
