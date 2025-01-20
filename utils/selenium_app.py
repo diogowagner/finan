@@ -23,7 +23,7 @@ try:
 
     # Aguarde o carregamento da página pós-login
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, "navbar-brand"))  # Ajuste o seletor para algo que aparece após o login
+        EC.presence_of_element_located((By.ID, "clientebusca_top"))  # Ajuste o seletor para algo que aparece após o login
     )
 
     # 2. Navegar para a página de adição de receita
