@@ -59,9 +59,9 @@
                 {% for item in relatorio %}
                     <tr>
                         {% if item.e_categoria_pai %}
-                            <td class="font-weight-bold" >{{ item.descricao|truncatechars:25 }}</td>
+                            <td class="font-weight-bold" >{{ item.descricao|truncatechars:23 }}</td>
                         {% else %}
-                            <td>{{ item.descricao|truncatechars:25 }}</td>
+                            <td>{{ item.descricao|truncatechars:23 }}</td>
                         {% endif %}
                         {% for valor in item.valor_mes %}
                             {% if item.e_categoria_pai %}
