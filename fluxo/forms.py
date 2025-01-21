@@ -154,7 +154,7 @@ class ContaForm(forms.ModelForm):
             'saldo_inicial',
             'tipo_chave_pix',
             'chave_pix',
-            'situacao_conta',
+            'ativo',
             'agrupamento',
             'permite_lancamentos',
         )
@@ -172,7 +172,7 @@ class ContaForm(forms.ModelForm):
             'saldo_inicial': forms.TextInput(attrs={'class':"form-control"}),
             'tipo_chave_pix': forms.Select(attrs={'class':"form-control"}),
             'chave_pix': forms.TextInput(attrs={'class':"form-control"}),
-            'situacao_conta': forms.TextInput(attrs={'class':"form-control"}),
+            'ativo': forms.CheckboxInput(),
             'agrupamento': forms.TextInput(attrs={'class':"form-control"}),
             'permite_lancamentos': forms.CheckboxInput(),
         }
