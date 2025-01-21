@@ -101,7 +101,7 @@ class Conta(models.Model):
     saldo_conta = models.DecimalField(max_digits=15, decimal_places=2)  # Ajustado max_digits
     tipo_chave_pix = models.CharField(max_length=20, choices=TIPO_CHAVE_PIX_CHOICES)  # Corrigido para usar choices
     chave_pix = models.CharField(max_length=100)
-    ativo = models.BooleanField(default=True)
+    situacao_conta = models.CharField(max_length=100)
     agrupamento = models.CharField(max_length=100)
     permite_lancamentos = models.BooleanField()
     data_criacao = models.DateTimeField(auto_now_add=True)
