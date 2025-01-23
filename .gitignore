@@ -5,8 +5,12 @@ gunicorn-error-log
 __localcode
 /data/
 
-utils/selenium_app.py
+migrations/
+**/migrations
+
+
 utils/selenium_app_copy.py
+**/selenium_code.py
 
 
 
