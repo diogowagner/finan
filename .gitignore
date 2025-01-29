@@ -12,9 +12,12 @@ migrations/
 utils/selenium_app_copy.py
 **/selenium_code.py
 
+backup.sh
+limpeza_backup.sh
 
 
 backups/
+backup/
 
 # Django #
 *.log
