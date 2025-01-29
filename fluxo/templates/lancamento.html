@@ -40,16 +40,18 @@
                         </div>
                         <div class="col-md-8">
                             <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    {{ lancamentoForm.conta }}
-                                    <div class="invalid-feedback">
-                                        Por favor, escolha uma conta.
+                                <div class="text-center">
+                                    <div class="col-6 col-md-4 mb-3">
+                                        {{ lancamentoForm.conta }}
+                                        <div class="invalid-feedback">
+                                            Por favor, escolha uma conta.
+                                        </div>
+                                    </div>
+                                    <div class="col-2 col-md-2 mb-2">
+                                        <a href="?conta=">Limpar</a>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mb-2">
-                                    <a href="?conta=">Limpar</a>
-                                </div>
-                                <div class="col-md-6 mb-2 text-center">
+                                <div class="col-12 col-md-6 mb-2 text-center">
                                     <a href="?filtro_data=hoje">Hoje</a> |
                                     <a href="?filtro_data=semana">7 dias</a> |
                                     <a href="?filtro_data=mes">30 dias</a> |
