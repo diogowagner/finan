@@ -27,7 +27,7 @@
 
 <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="">Finan</a>
+        <a class="navbar-brand" href="{% url "fluxo:inicio" %}">Finan</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
@@ -38,7 +38,7 @@
             {% else %}
                 <li class="nav-item">
             {% endif %}
-                <a class="nav-link" href="/">Início</a>
+                <a class="nav-link" href="{% url "fluxo:inicio" %}">Início</a>
                 </li>
             {% if is_lancamento %}
                 <li class="nav-item active">
