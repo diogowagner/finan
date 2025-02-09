@@ -1,0 +1,6 @@
+.fixed {
+    position: sticky;
+    left: 0;
+    background-color: #f9f9f9;
+    z-index: 1;
+}
