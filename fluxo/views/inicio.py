@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from fluxo.models import Lancamento
+from fluxo.models import Lancamento, Item
 from finan.models import Conta
 from django.db.models import Sum
 from datetime import date, timedelta
@@ -26,8 +26,9 @@ def inicio(request):
 
     lista_saldos =[]
     for i in Conta.objects.all():
-        saldo = Lancamento.objects.all().filter(
-                            conta_id=i.id, situacao='PAGO').aggregate(Sum('valor_total'))['valor_total__sum']
+        # saldo = Lancamento.objects.all().filter(
+        #                     conta_id=i.id, situacao='PAGO').aggregate(Sum('valor_total'))['valor_total__sum']
+        saldo = Item.objects.all().filter(lancamento__conta_id=i.id).aggregate(Sum('valor'))['valor__sum']
         if saldo is None:
             saldo = 0
         conta_saldo = {
